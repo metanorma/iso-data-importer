@@ -1,0 +1,18 @@
+# .github/workflows/ci_tests.yml
+# Uses Metanorma's generic Rake workflow for tests
+name: CI Rake Tests
+
+on:
+  push:
+    branches: [ main, master ] # Adjust to your default branch
+    tags: [ 'v*' ]            # Also run on version tags
+  pull_request:
+    branches: [ main, master ] # Adjust to your default branch
+
+jobs:
+  rake_tests: # Job name
+    uses: metanorma/ci/.github/workflows/generic-rake.yml@main
+    secrets:
+      # PAT token if the generic workflow needs it for any reason (e.g., private gem dependencies, status checks)
+      # If not needed by generic-rake.yml for simple public repos, this might be optional
+      pat_token: ${{ secrets.METANORMA_CI_PAT_TOKEN }}

@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# If your gem is not yet installed, and you're running from the project directory:
+# This ensures 'lib' is on the load path.
+# If running after `gem install`, this might not be strictly necessary
+# as rubygems handles load paths. But it's good for development.
+$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
+
+require 'iso/data/importer/cli' # Path relative to lib, assuming exe is in project root
+
+# Start the Thor CLI
+Iso::Data::Importer::CLI.start(ARGV)
