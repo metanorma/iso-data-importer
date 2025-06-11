@@ -14,14 +14,12 @@ module Iso
         # Represents a localized string (e.g., for title, scope)
         class LocalizedString < Lutaml::Model::Serializable
           attribute :en, :string
-          attribute :fr, :string # Add other languages if observed in data
+          attribute :fr, :string
 
           def initialize(attributes = {})
-            super() # Initialize Lutaml base
-            # Explicitly assign from input hash, assuming keys match attribute names
+            super()
             self.en = attributes['en'] if attributes.key?('en')
             self.fr = attributes['fr'] if attributes.key?('fr')
-            # Add other languages here if defined as attributes
           end
         end
 
@@ -44,9 +42,9 @@ module Iso
         class TechnicalCommittee < Lutaml::Model::Serializable
           attribute :id, :integer
           attribute :reference, :string
-          attribute :status, :string # Consider adding `values: %w[Active Suspended]` if validation desired
-          attribute :title, LocalizedString # Nested model
-          attribute :secretariat, OrganizationReference # Nested model
+          attribute :status, :string
+          attribute :title, LocalizedString
+          attribute :secretariat, OrganizationReference
           attribute :creation_date, :date
           attribute :scope, LocalizedString # Nested model
           attribute :parent_id, :integer
@@ -56,25 +54,6 @@ module Iso
           attribute :committee_liaisons, OrganizationReference, collection: true # Collection of OrganizationReference objects
           attribute :organization_liaisons, OrganizationReference, collection: true # Collection of OrganizationReference objects
           attribute :sort_key, :string
-
-          # The key_value block is NOT used by new(hash) as we've established.
-          # It's kept here for documentation or other Lutaml tools.
-          # key_value do
-          #   map "id", to: :id
-          #   map "reference", to: :reference
-          #   map "status", to: :status
-          #   map "title", to: :title # Lutaml would expect to call LocalizedString.new(value)
-          #   map "secretariat", to: :secretariat # Lutaml would expect to call OrganizationReference.new(value)
-          #   map "creationDate", to: :creation_date
-          #   map "scope", to: :scope
-          #   map "parentId", to: :parent_id
-          #   map "childrenId", to: :children_ids # Maps the array from "childrenId"
-          #   map "pMembers", to: :p_members # Maps array of hashes to collection of OrganizationReference
-          #   map "oMembers", to: :o_members
-          #   map "committeeLiaisons", to: :committee_liaisons
-          #   map "organizationLiaisons", to: :organization_liaisons
-          #   map "sortKey", to: :sort_key
-          # end
 
           def initialize(raw_json_attributes = {})
             super() # Initialize Lutaml base first
@@ -86,7 +65,7 @@ module Iso
             if raw_json_attributes['title'].is_a?(Hash)
               self.title = LocalizedString.new(raw_json_attributes['title'])
             else
-              self.title = nil # Or LocalizedString.new if you always want an object
+              self.title = nil
             end
 
             if raw_json_attributes['secretariat'].is_a?(Hash)
@@ -104,14 +83,12 @@ module Iso
             if raw_json_attributes['scope'].is_a?(Hash)
               self.scope = LocalizedString.new(raw_json_attributes['scope'])
             else
-              self.scope = nil # Or LocalizedString.new
+              self.scope = nil
             end
 
             self.parent_id = raw_json_attributes['parentId']
-            # JSON key "childrenId" maps to attribute children_ids
             self.children_ids = raw_json_attributes['childrenId'].is_a?(Array) ? raw_json_attributes['childrenId'] : []
 
-            # For collections of nested objects:
             self.p_members = map_to_organization_references(raw_json_attributes['pMembers'])
             self.o_members = map_to_organization_references(raw_json_attributes['oMembers'])
             self.committee_liaisons = map_to_organization_references(raw_json_attributes['committeeLiaisons'])

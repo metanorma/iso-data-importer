@@ -55,15 +55,15 @@ namespace :data do
     cache_dir = Iso::Data::Importer::Scrapers::BaseScraper::TMP_DIR
     if Dir.exist?(cache_dir)
       puts "=> Cleaning cache directory: #{cache_dir}..."
-      # FileUtils.rm_rf(cache_dir) # This would remove the 'tmp/iso_data_cache' dir itself
-      # To remove only contents:
+-      # FileUtils.rm_rf(cache_dir) # This would remove the 'tmp/iso_data_cache' dir itself
+-      # To remove only contents:
       Dir.foreach(cache_dir) do |f|
         fn = File.join(cache_dir, f)
         FileUtils.rm_rf(fn) if f != '.' && f != '..' # Avoid deleting . and ..
       end
-      # Or more simply if you want to remove everything inside:
-      # FileUtils.remove_dir(cache_dir, true) # true to force remove non-empty
-      # FileUtils.mkdir_p(cache_dir)          # then recreate it
+-      # Or more simply if you want to remove everything inside:
+-      # FileUtils.remove_dir(cache_dir, true) # true to force remove non-empty
+-      # FileUtils.mkdir_p(cache_dir)          # then recreate it
       puts "=> Cache directory cleaned."
     else
       puts "=> Cache directory #{cache_dir} does not exist. Nothing to clean."
