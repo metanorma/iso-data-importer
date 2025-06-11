@@ -56,17 +56,14 @@ module Iso
                 count += 1
               rescue JSON::ParserError => e
                 log "Skipping invalid JSON line #{idx + 1} in #{File.basename(file_path)}: #{line.strip}", 1, :warn
-                log "Error: #{e.message}", 2, :warn # This e.message contains newline
+                log "Error: #{e.message}", 2, :warn
               end
             end
-            # Explicitly pass all arguments to log
             log "Parsed #{count} items from #{File.basename(file_path)}", 0, :info
             count
           end
 
           def each_csv_row(file_path, clean_headers: true, &block)
-            # ... (CSV parsing logic as before) ...
-            # Ensure any log calls here are also explicit with all 3 args or match defaults
             return 0 unless file_path && File.exist?(file_path)
             file_content = File.read(file_path, encoding: 'UTF-8').sub("\xEF\xBB\xBF", '')
             count = 0

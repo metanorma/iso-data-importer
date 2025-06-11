@@ -13,11 +13,6 @@ module Iso
           LOCAL_FILENAME = "iso_technical_committees.jsonl"
 
           def scrape(force_download: false, &block)
-            # Uncomment for deep debugging if needed:
-            # puts "DEBUG SCRAPER (TC): SCRAPE METHOD ENTERED for TechnicalCommitteesScraper"
-            # puts "  force_download: #{force_download}"
-            # puts "  Block given? #{block_given?}"
-
             log("Starting scrape for ISO Technical Committees...", 0, :info)
             processed_count = 0 # Initialize early, this will be the return value
 
@@ -29,14 +24,11 @@ module Iso
 
             unless downloaded_file_path && File.exist?(downloaded_file_path)
               log("Failed to download or find technical committees file. Aborting scrape.", 0, :error)
-              # puts "DEBUG SCRAPER (TC): Returning from scrape (download fail). Processed count: #{processed_count}" # DEBUG
               return processed_count # Explicitly return 0 (current value of processed_count)
             end
 
             begin
-              # puts "DEBUG SCRAPER (TC): Entering each_jsonl_item block. Processed count: #{processed_count}" # DEBUG
               each_jsonl_item(downloaded_file_path) do |json_hash|
-                # puts "DEBUG SCRAPER (TC): Processing an item from JSONL. Current count: #{processed_count}" # DEBUG (can be very verbose)
                 begin
                   committee = Iso::Data::Importer::Models::TechnicalCommittee.new(json_hash)
                   yield committee
@@ -50,7 +42,6 @@ module Iso
                   log("Backtrace (item processing):\n#{e.backtrace.take(5).join("\n")}", 2, :error)
                 end
               end
-              # puts "DEBUG SCRAPER (TC): Exited each_jsonl_item block. Processed count: #{processed_count}" # DEBUG
             rescue StandardError => e # For critical errors from each_jsonl_item itself (e.g., file IO)
               log("Critical error during JSONL processing for technical committees: #{e.message}", 0, :error)
               log("Backtrace (JSONL processing):\n#{e.backtrace.take(5).join("\n")}", 1, :error)
@@ -59,7 +50,6 @@ module Iso
             end
 
             log("Finished scraping ISO Technical Committees. Processed #{processed_count} items.", 0, :info)
-            # puts "DEBUG SCRAPER (TC): FINAL RETURN from scrape. Processed count: #{processed_count}" # DEBUG
             return processed_count # Ensure this is the absolute last thing, guaranteeing an integer return
           end
         end

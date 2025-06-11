@@ -5,7 +5,7 @@ require_relative "lib/iso/data/importer/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "iso-data-importer"
-  spec.version       = Iso::Data::Importer::VERSION # Assumes you'll define this constant
+  spec.version       = Iso::Data::Importer::VERSION
   spec.authors       = ["Ribose Inc."]
   spec.email         = ["open.source@ribose.com"]
 
@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
     International Classification for Standards (ICS), making this data
     available in a structured YAML format for offline use and integration.
   DESCRIPTION
-  spec.homepage      = "https://github.com/metanorma/iso-data-importer" # CHANGE THIS
+  spec.homepage      = "https://github.com/metanorma/iso-data-importer"
   spec.license       = "BSD-2-Clause" 
 
   # Specify a minimum Ruby version. Check what other Metanorma tools use.

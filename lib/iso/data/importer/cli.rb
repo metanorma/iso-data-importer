@@ -2,11 +2,7 @@
 # frozen_string_literal: true
 
 require 'thor'
-require_relative 'orchestrator' # Assuming orchestrator.rb is in the same directory level
-                                # Adjust if orchestrator.rb is elsewhere relative to cli.rb
-                                # If cli.rb is in root/lib, and orchestrator is in root/lib/iso/data/importer/
-                                # then it would be: require_relative 'iso/data/importer/orchestrator'
-                                # Let's assume cli.rb is at the top level of your lib/iso/data/importer/ module structure
+require_relative 'orchestrator'
 
 module Iso
   module Data
@@ -60,7 +56,6 @@ module Iso
           else
             puts "---"
             STDERR.puts "ERROR: Data import process failed. Check logs above for details."
-            # Thor's exit_on_failure? should handle exiting with status 1
           end
         end
 
@@ -87,11 +82,6 @@ module Iso
 
           if clean_all_if_no_specific || clean_cache
             puts "Cleaning cached files..."
-            # We need BaseScraper for TMP_DIR.
-            # This shows a slight dependency issue if CLI is too separate.
-            # Ideally, Rake tasks might be better for direct file system ops,
-            # or Orchestrator could expose clean methods.
-            # For now, let's require it here.
             require_relative 'scrapers/base_scraper' # For BaseScraper::TMP_DIR
             cache_dir = Iso::Data::Importer::Scrapers::BaseScraper::TMP_DIR
             if Dir.exist?(cache_dir)
@@ -121,7 +111,7 @@ module Iso
         # You might want a version command
         desc "version", "Prints the gem version"
         def version
-          require_relative 'version' # Assuming version.rb is at lib/iso/data/importer/version.rb
+          require_relative 'version'
           puts Iso::Data::Importer::VERSION
         end
 

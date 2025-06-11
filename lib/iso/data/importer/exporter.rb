@@ -24,7 +24,6 @@ module Iso
         def initialize
           log("Initializing Exporter and ensuring base output directory exists...", :info)
           ensure_output_directory(DATA_OUTPUT_DIR)
-          # No longer creates individual subdirectories like data/deliverables/
         end
 
         def ensure_output_directory(dir_path)
@@ -40,7 +39,6 @@ module Iso
           base_filenames.each do |base_name|
             extensions.each do |ext|
               filepath_to_remove = File.join(self.class::DATA_OUTPUT_DIR, "#{base_name}#{ext}")
-              # log("Attempting to remove: #{filepath_to_remove}", :info) # Debug
               FileUtils.rm_f(filepath_to_remove)
             end
           end
