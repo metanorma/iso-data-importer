@@ -1,0 +1,29 @@
+# .github/workflows/manual_release.yml
+# Uses Metanorma's generic RubyGems release workflow
+name: Manual Gem Release
+
+on:
+  workflow_dispatch: # Allows manual triggering from GitHub UI
+    inputs:
+      next_version:
+        description: |
+          Next release version. Possible values: x.y.z, major, minor, patch, pre, rc, etc.
+          Use 'skip' to build and push the current version without bumping.
+        required: true
+        default: 'patch' # Default to a patch release if manually triggered
+  # This trigger allows other repositories/actions to trigger a release in this repo.
+  # Useful if a central Metanorma tool coordinates releases.
+  repository_dispatch:
+    types: [ do-release ]
+
+jobs:
+  release_gem: # Job name
+    uses: metanorma/ci/.github/workflows/rubygems-release.yml@main
+    with:
+      # Pass the input from workflow_dispatch to the reusable workflow
+      next_version: ${{ github.event.inputs.next_version || github.event.client_payload.next_version || 'patch' }}
+    secrets:
+      # Secret for publishing to RubyGems.org
+      rubygems-api-key: ${{ secrets.METANORMA_CI_RUBYGEMS_API_KEY }}
+      # PAT token, likely needed by the reusable workflow for git operations (tagging, pushing)
+      pat_token: ${{ secrets.METANORMA_CI_PAT_TOKEN }}
