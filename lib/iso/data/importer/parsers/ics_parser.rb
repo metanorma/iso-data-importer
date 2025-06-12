@@ -1,7 +1,7 @@
-# lib/iso/data/importer/scrapers/ics_scraper.rb
+# lib/iso/data/importer/parsers/ics_parser.rb
 # frozen_string_literal: true
 
-require_relative "base_scraper"
+require_relative "base_parser"
 require_relative "../models/ics_entry"
 
 module Iso
@@ -12,8 +12,8 @@ module Iso
           SOURCE_URL = "https://isopublicstorageprod.blob.core.windows.net/opendata/_latest/iso_ics/xml/ICS-simple.xml"
           LOCAL_FILENAME = "ICS-simple.xml"
 
-          def scrape(force_download: false)
-            log("Starting scrape for ISO ICS data...", 0, :info)
+          def download(force_download: false)
+            log("Starting download for ISO ICS data...", 0, :info)
             0
 
             downloaded_file_path = download_file(
@@ -23,7 +23,7 @@ module Iso
             )
 
             unless downloaded_file_path && File.exist?(downloaded_file_path)
-              log("Failed to download or find ICS data file. Aborting scrape.",
+              log("Failed to download or find ICS data file. Aborting download.",
                   0, :error)
               return
             end

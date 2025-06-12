@@ -2,7 +2,7 @@
 require "spec_helper"
 
 require "iso/data/importer/orchestrator"
-require "iso/data/importer/scrapers"
+require "iso/data/importer/parsers"
 require "iso/data/importer/exporter"
 require "iso/data/importer/models/deliverable_collection"
 require "iso/data/importer/models/technical_committee_collection"

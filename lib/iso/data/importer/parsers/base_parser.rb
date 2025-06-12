@@ -1,4 +1,4 @@
-# lib/iso/data/importer/scrapers/base_scraper.rb
+# lib/iso/data/importer/parsers/base_parser.rb
 # frozen_string_literal: true
 
 require "httparty"

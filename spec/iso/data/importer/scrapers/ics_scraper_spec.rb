@@ -1,4 +1,4 @@
-# spec/iso/data/importer/scrapers/ics_scraper_spec.rb
+# spec/iso/data/importer/parsers/ics_scraper_spec.rb
 require "spec_helper"
 
 require "iso/data/importer/scrapers/ics_scraper"
@@ -29,7 +29,7 @@ RSpec.describe Iso::Data::Importer::Scrapers::IcsScraper do
     FileUtils.rm_f(cache_path)
   end
 
-  describe "#scrape" do
+  describe "#download" do
     context "when downloading and parsing successfully (using a prepared cache file)" do
       let(:sample_csv_data_row1) do
         "\"01\",\"\",\"Generalities. Terminology. Standardization. Documentation\",\"Généralités. Terminologie. Normalisation. Documentation\",\"\",\"\""
@@ -52,7 +52,7 @@ RSpec.describe Iso::Data::Importer::Scrapers::IcsScraper do
         ics_entries_yielded = []
         allow(scraper).to receive(:log).and_call_original # Allow logs but don't assert specific order here
 
-        scraper.scrape(force_download: false) do |ics_entry|
+        scraper.download(force_download: false) do |ics_entry|
           expect(ics_entry).to be_an_instance_of(Iso::Data::Importer::Models::IcsEntry)
           ics_entries_yielded << ics_entry
         end
@@ -62,7 +62,7 @@ RSpec.describe Iso::Data::Importer::Scrapers::IcsScraper do
       it "correctly populates the first IcsEntry object" do
         first_entry = nil
         allow(scraper).to receive(:log).and_call_original
-        scraper.scrape(force_download: false) do |entry|
+        scraper.download(force_download: false) do |entry|
           first_entry = entry
           break
         end
@@ -75,7 +75,7 @@ RSpec.describe Iso::Data::Importer::Scrapers::IcsScraper do
 
       it "returns the correct processed count when completing fully" do
         allow(scraper).to receive(:log).and_call_original
-        processed_count = scraper.scrape(force_download: false) # Call without a block
+        processed_count = scraper.download(force_download: false) # Call without a block
         expect(processed_count).to eq(2)
       end
     end
@@ -91,7 +91,7 @@ RSpec.describe Iso::Data::Importer::Scrapers::IcsScraper do
 
       # Expect the "Starting..." and "Using cached file..." logs in order.
       expect(scraper).to receive(:log).with(
-        /Starting scrape for ISO ICS data/i, 0, :info
+        /Starting download for ISO ICS data/i, 0, :info
       ).ordered.and_call_original
       expect(scraper).to receive(:log).with("Using cached file: #{cache_path}",
                                             0, :info).ordered.and_call_original
@@ -99,7 +99,7 @@ RSpec.describe Iso::Data::Importer::Scrapers::IcsScraper do
       allow(scraper).to receive(:log).with(anything, anything,
                                            anything).and_call_original
 
-      scraper.scrape(force_download: false) { |entry| break if entry }
+      scraper.download(force_download: false) { |entry| break if entry }
 
       expect(File.mtime(cache_path).to_i).to eq(original_mtime.to_i)
     end
@@ -111,7 +111,7 @@ RSpec.describe Iso::Data::Importer::Scrapers::IcsScraper do
 
       # Expect this sequence of logs for a download error
       expect(scraper).to receive(:log).with(
-        "Starting scrape for ISO ICS data...", 0, :info
+        "Starting download for ISO ICS data...", 0, :info
       ).ordered.and_call_original
       expect(scraper).to receive(:log).with(
         "Downloading #{local_filename} from #{source_url}...", 0, :info
@@ -120,12 +120,12 @@ RSpec.describe Iso::Data::Importer::Scrapers::IcsScraper do
         /Exception downloading #{Regexp.escape(local_filename)}: SocketError - Simulated CSV download error/i, 1, :error
       ).ordered.and_call_original
       expect(scraper).to receive(:log).with(
-        "Failed to download or find ICS data file. Aborting scrape.", 0, :error
+        "Failed to download or find ICS data file. Aborting download.", 0, :error
       ).ordered.and_call_original
       # No other logs should be expected in this error path if it aborts correctly.
 
       processed_count = # Call without a block
-        scraper.scrape(force_download: true) do
+        scraper.download(force_download: true) do
         end
       expect(processed_count).to eq(0)
     end
@@ -151,7 +151,7 @@ RSpec.describe Iso::Data::Importer::Scrapers::IcsScraper do
         allow(scraper).to receive(:log).with(anything, anything,
                                              anything).and_call_original
 
-        processed_count = scraper.scrape(force_download: false) do |ics_entry|
+        processed_count = scraper.download(force_download: false) do |ics_entry|
           yielded_objects << ics_entry
         end
 
@@ -161,7 +161,7 @@ RSpec.describe Iso::Data::Importer::Scrapers::IcsScraper do
         expect(yielded_objects.first.identifier).to eq("01")
 
         # Optional: If you still want to check other specific logs occurred, but without strict ordering:
-        # expect(scraper).to have_received(:log).with("Starting scrape for ISO ICS data...", 0, :info)
+        # expect(scraper).to have_received(:log).with("Starting download for ISO ICS data...", 0, :info)
         # expect(scraper).to have_received(:log).with("Processed 1 rows from #{local_filename}", 0, :info)
         # expect(scraper).to have_received(:log).with("Finished scraping ISO ICS data. Processed 1 items.", 0, :info)
         # Note: `have_received` requires `spy` setup or `and_call_original` on a prior `allow` or `expect`.

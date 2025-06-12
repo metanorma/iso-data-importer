@@ -2,7 +2,7 @@
 require "spec_helper"
 
 # Require the main Scrapers module file
-require "iso/data/importer/scrapers"
+require "iso/data/importer/parsers"
 
 # Require all model classes (items and collections)
 require "iso/data/importer/models/deliverable"
@@ -38,7 +38,7 @@ RSpec.describe Iso::Data::Importer::Scrapers do
     instance_double(Iso::Data::Importer::Models::IcsEntry, identifier: "03.040")
   end
 
-  # Mock instances of the individual scrapers
+  # Mock instances of the individual parsers
   let(:deliverables_scraper_instance) do
     instance_double(Iso::Data::Importer::Scrapers::DeliverablesScraper)
   end
@@ -55,20 +55,20 @@ RSpec.describe Iso::Data::Importer::Scrapers do
     allow(Iso::Data::Importer::Scrapers::TechnicalCommitteesScraper).to receive(:new).and_return(tc_scraper_instance)
     allow(Iso::Data::Importer::Scrapers::IcsScraper).to receive(:new).and_return(ics_scraper_instance)
 
-    # Default stub for scrape methods: yield nothing, return count 0.
+    # Default stub for download methods: yield nothing, return count 0.
     # Specific tests will override this to simulate yielding data.
-    allow(deliverables_scraper_instance).to receive(:scrape).and_return(0)
-    allow(tc_scraper_instance).to receive(:scrape).and_return(0)
-    allow(ics_scraper_instance).to receive(:scrape).and_return(0)
+    allow(deliverables_scraper_instance).to receive(:download).and_return(0)
+    allow(tc_scraper_instance).to receive(:download).and_return(0)
+    allow(ics_scraper_instance).to receive(:download).and_return(0)
   end
 
   describe ".fetch_deliverables" do
-    it "instantiates DeliverablesScraper, calls its scrape method, and returns a DeliverableCollection" do
+    it "instantiates DeliverablesScraper, calls its download method, and returns a DeliverableCollection" do
       # Configure the mock scraper to yield our mock deliverables
-      expect(deliverables_scraper_instance).to receive(:scrape) do |&block_param|
+      expect(deliverables_scraper_instance).to receive(:download) do |&block_param|
         block_param.call(mock_deliverable1)
         block_param.call(mock_deliverable2)
-        2 # Simulate scrape returning the count of processed items
+        2 # Simulate download returning the count of processed items
       end.with(force_download: false) # Check default argument
 
       collection = described_class.fetch_deliverables # force_download defaults to false
@@ -81,16 +81,16 @@ RSpec.describe Iso::Data::Importer::Scrapers do
     end
 
     it "passes force_download: true to the scraper" do
-      expect(deliverables_scraper_instance).to receive(:scrape)
+      expect(deliverables_scraper_instance).to receive(:download)
         .with(force_download: true)
-        .and_return(0) # Return value for scrape method
+        .and_return(0) # Return value for download method
       described_class.fetch_deliverables(force_download: true)
     end
   end
 
   describe ".fetch_technical_committees" do
-    it "instantiates TechnicalCommitteesScraper, calls its scrape method, and returns a TechnicalCommitteeCollection" do
-      expect(tc_scraper_instance).to receive(:scrape) do |&block_param|
+    it "instantiates TechnicalCommitteesScraper, calls its download method, and returns a TechnicalCommitteeCollection" do
+      expect(tc_scraper_instance).to receive(:download) do |&block_param|
         block_param.call(mock_tc1)
         1
       end.with(force_download: false)
@@ -102,7 +102,7 @@ RSpec.describe Iso::Data::Importer::Scrapers do
     end
 
     it "passes force_download: true to the scraper" do
-      expect(tc_scraper_instance).to receive(:scrape)
+      expect(tc_scraper_instance).to receive(:download)
         .with(force_download: true)
         .and_return(0)
       described_class.fetch_technical_committees(force_download: true)
@@ -110,8 +110,8 @@ RSpec.describe Iso::Data::Importer::Scrapers do
   end
 
   describe ".fetch_ics_entries" do
-    it "instantiates IcsScraper, calls its scrape method, and returns an IcsEntryCollection" do
-      expect(ics_scraper_instance).to receive(:scrape) do |&block_param|
+    it "instantiates IcsScraper, calls its download method, and returns an IcsEntryCollection" do
+      expect(ics_scraper_instance).to receive(:download) do |&block_param|
         block_param.call(mock_ics1)
         block_param.call(mock_ics2)
         2
@@ -124,7 +124,7 @@ RSpec.describe Iso::Data::Importer::Scrapers do
     end
 
     it "passes force_download: true to the scraper" do
-      expect(ics_scraper_instance).to receive(:scrape)
+      expect(ics_scraper_instance).to receive(:download)
         .with(force_download: true)
         .and_return(0)
       described_class.fetch_ics_entries(force_download: true)

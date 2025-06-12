@@ -1,7 +1,7 @@
 # lib/iso/data/importer/orchestrator.rb
 # frozen_string_literal: true
 
-require_relative "scrapers"
+require_relative "parsers"
 require_relative "exporter"
 
 module Iso

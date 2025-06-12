@@ -1,4 +1,4 @@
-# spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb
+# spec/iso/data/importer/parsers/deliverables_scraper_spec.rb
 require "spec_helper"
 
 require "iso/data/importer/scrapers/deliverables_scraper"
@@ -22,15 +22,15 @@ RSpec.describe Iso::Data::Importer::Scrapers::DeliverablesScraper do
     FileUtils.rm_f(cache_path)
   end
 
-  describe "#scrape" do
+  describe "#download" do
     it "downloads the JSONL file, parses it, and yields Deliverable objects",
        :live do
       deliverables_yielded = []
       allow(scraper).to receive(:log).and_call_original # Allow all logs
       exception_in_yield_block = nil # Flag for errors in the spec's block
 
-      processed_count = scraper.scrape(force_download: true) do |deliverable|
-        # --- Start: Code within the block passed to scraper.scrape ---
+      processed_count = scraper.download(force_download: true) do |deliverable|
+        # --- Start: Code within the block passed to scraper.download ---
         expect(deliverable).to be_an_instance_of(Iso::Data::Importer::Models::Deliverable)
 
         # Safer check for deliverable.id before type assertion
@@ -45,7 +45,7 @@ RSpec.describe Iso::Data::Importer::Scrapers::DeliverablesScraper do
 
         deliverables_yielded << deliverable
         break if deliverables_yielded.count >= 2 # Process a few for speed
-        # --- End: Code within the block passed to scraper.scrape ---
+        # --- End: Code within the block passed to scraper.download ---
       rescue StandardError => e
         exception_in_yield_block = e
         puts "\nDEBUG SPEC: Exception caught inside RSpec's yield block:"
@@ -72,7 +72,7 @@ RSpec.describe Iso::Data::Importer::Scrapers::DeliverablesScraper do
     it "uses a cached file if force_download is false and the file exists" do
       allow(scraper).to receive(:log).and_call_original # Allow logs during setup
       # Populate cache
-      scraper.scrape(force_download: true) do |model|
+      scraper.download(force_download: true) do |model|
         break if model
       end
       expect(File.exist?(cache_path)).to be true
@@ -85,13 +85,13 @@ RSpec.describe Iso::Data::Importer::Scrapers::DeliverablesScraper do
       expect(scraper).to receive(:log).with("Using cached file: #{cache_path}",
                                             0, :info).ordered.and_call_original
       # Allow other info logs
-      allow(scraper).to receive(:log).with(/Starting scrape/i, 0, :info).ordered.and_call_original # Ordered with Using cached
+      allow(scraper).to receive(:log).with(/Starting download/i, 0, :info).ordered.and_call_original # Ordered with Using cached
       allow(scraper).to receive(:log).with(/Parsed \d+ items/i, 0,
                                            :info).and_call_original
       allow(scraper).to receive(:log).with(/Finished scraping/i, 0,
                                            :info).and_call_original
 
-      scraper.scrape(force_download: false) { |model| break if model }
+      scraper.download(force_download: false) { |model| break if model }
 
       expect(File.mtime(cache_path).to_i).to eq(original_mtime.to_i)
       expect(File.size(cache_path)).to eq(original_size)
@@ -103,7 +103,7 @@ RSpec.describe Iso::Data::Importer::Scrapers::DeliverablesScraper do
         .and_raise(SocketError.new("Simulated SocketError from RSpec"))
 
       expect(scraper).to receive(:log).with(
-        "Starting scrape for ISO Deliverables...", 0, :info
+        "Starting download for ISO Deliverables...", 0, :info
       ).ordered.and_call_original
       expect(scraper).to receive(:log).with(
         "Downloading #{local_filename} from #{source_url}...", 0, :info
@@ -112,11 +112,11 @@ RSpec.describe Iso::Data::Importer::Scrapers::DeliverablesScraper do
         /Exception downloading #{Regexp.escape(local_filename)}: SocketError - Simulated SocketError/i, 1, :error
       ).ordered.and_call_original
       expect(scraper).to receive(:log).with(
-        "Failed to download or find deliverables file. Aborting scrape.", 0, :error
+        "Failed to download or find deliverables file. Aborting download.", 0, :error
       ).ordered.and_call_original
       # Ensure no other unexpected error logs, but allow info/warn if any were defined for other paths not hit
 
-      processed_count = scraper.scrape(force_download: true) {}
+      processed_count = scraper.download(force_download: true) {}
       expect(processed_count).to eq(0)
     end
 
@@ -130,7 +130,7 @@ RSpec.describe Iso::Data::Importer::Scrapers::DeliverablesScraper do
         yielded_objects = []
 
         expect(scraper).to receive(:log).with(
-          "Starting scrape for ISO Deliverables...", 0, :info
+          "Starting download for ISO Deliverables...", 0, :info
         ).ordered.and_call_original
         expect(scraper).to receive(:log).with(
           "Using cached file: #{cache_path}", 0, :info
@@ -148,7 +148,7 @@ RSpec.describe Iso::Data::Importer::Scrapers::DeliverablesScraper do
           "Finished scraping ISO Deliverables. Processed 2 items.", 0, :info
         ).ordered.and_call_original
 
-        processed_count = scraper.scrape(force_download: false) do |deliverable|
+        processed_count = scraper.download(force_download: false) do |deliverable|
           yielded_objects << deliverable
         end
 

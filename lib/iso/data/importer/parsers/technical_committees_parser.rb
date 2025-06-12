@@ -1,7 +1,7 @@
-# lib/iso/data/importer/scrapers/technical_committees_scraper.rb
+# lib/iso/data/importer/parsers/technical_committees_parser.rb
 # frozen_string_literal: true
 
-require_relative "base_scraper"
+require_relative "base_parser"
 require_relative "../models/technical_committee" # Corrected model name
 
 module Iso
@@ -12,8 +12,8 @@ module Iso
           SOURCE_URL = "https://isopublicstorageprod.blob.core.windows.net/opendata/_latest/iso_technical_committees/json/iso_technical_committees.jsonl"
           LOCAL_FILENAME = "iso_technical_committees.jsonl"
 
-          def scrape(force_download: false)
-            log("Starting scrape for ISO Technical Committees...", 0, :info)
+          def download(force_download: false)
+            log("Starting download for ISO Technical Committees...", 0, :info)
             downloaded_file_path = download_file(
               SOURCE_URL,
               LOCAL_FILENAME,
@@ -22,7 +22,7 @@ module Iso
 
             unless downloaded_file_path && File.exist?(downloaded_file_path)
               log(
-                "Failed to download or find technical committees file. Aborting scrape.", 0, :error
+                "Failed to download or find technical committees file. Aborting download.", 0, :error
               )
               return
             end
