@@ -1,6 +1,4 @@
-# lib/iso/data/importer/models/deliverable.rb
 require 'lutaml/model'
-require 'date' # For Date type coercion
 
 module Iso
   module Data
@@ -10,20 +8,19 @@ module Iso
           attribute :en, :integer
           attribute :fr, :integer
 
-          def initialize(attributes = {})
-            super() # Initialize Lutaml base
-            self.en = attributes['en'] if attributes.key?('en')
-            self.fr = attributes['fr'] if attributes.key?('fr')
+          key_value do
+            map 'en', to: :en
+            map 'fr', to: :fr
           end
         end
 
         class LocalizedScope < Lutaml::Model::Serializable
           attribute :en, :string
           attribute :fr, :string
-          def initialize(attributes = {})
-            super() # Initialize Lutaml base
-            self.en = attributes['en'] if attributes.key?('en')
-            self.fr = attributes['fr'] if attributes.key?('fr')
+
+          key_value do
+            map 'en', to: :en
+            map 'fr', to: :fr
           end
         end
 
@@ -43,44 +40,21 @@ module Iso
           attribute :pages, LocalizedPages
           attribute :scope, LocalizedScope
 
-          def initialize(raw_json_attributes = {}) # Expects raw JSON hash with camelCase keys
-            super() # Call Lutaml's base initialize FIRST, without arguments.
-
-            self.id = raw_json_attributes['id']
-
-            self.deliverable_type = raw_json_attributes['deliverableType']
-            self.supplement_type = raw_json_attributes['supplementType']
-            self.reference = raw_json_attributes['reference']
-
-            if raw_json_attributes['publicationDate'].is_a?(String) && !raw_json_attributes['publicationDate'].empty?
-              self.publication_date = Date.parse(raw_json_attributes['publicationDate'])
-            else
-              self.publication_date = nil
-            end
-
-            self.edition = raw_json_attributes['edition']
-
-            # For collections, assign directly if it's an array, otherwise default to empty array
-            self.ics_codes = raw_json_attributes['icsCode'].is_a?(Array) ? raw_json_attributes['icsCode'] : []
-            self.owner_committee = raw_json_attributes['ownerCommittee']
-            self.current_stage = raw_json_attributes['currentStage']
-            self.replaces_ids = raw_json_attributes['replaces'].is_a?(Array) ? raw_json_attributes['replaces'] : []
-            self.replaced_by_ids = raw_json_attributes['replacedBy'].is_a?(Array) ? raw_json_attributes['replacedBy'] : []
-            self.languages = raw_json_attributes['languages'].is_a?(Array) ? raw_json_attributes['languages'] : []
-
-
-            # Explicitly instantiate nested models
-            if raw_json_attributes['pages'].is_a?(Hash)
-              self.pages = LocalizedPages.new(raw_json_attributes['pages'])
-            else
-              self.pages = nil # Ensure it's nil if "pages" key is absent or not a hash
-            end
-
-            if raw_json_attributes['scope'].is_a?(Hash)
-              self.scope = LocalizedScope.new(raw_json_attributes['scope'])
-            else
-              self.scope = nil # Ensure it's nil if "scope" key is absent or not a hash
-            end
+          json do
+            map 'id', to: :id
+            map 'deliverableType', to: :deliverable_type
+            map 'supplementType', to: :supplement_type
+            map 'reference', to: :reference
+            map 'publicationDate', to: :publication_date
+            map 'edition', to: :edition
+            map 'icsCode', to: :ics_codes
+            map 'ownerCommittee', to: :owner_committee
+            map 'currentStage', to: :current_stage
+            map 'replaces', to: :replaces_ids
+            map 'replacedBy', to: :replaced_by_ids
+            map 'languages', to: :languages
+            map 'pages', to: :pages
+            map 'scope', to: :scope
           end
         end
       end

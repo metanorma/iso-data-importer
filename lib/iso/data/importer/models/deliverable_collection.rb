@@ -2,31 +2,18 @@
 # frozen_string_literal: true
 
 require 'lutaml/model'
-require 'forwardable'
-require_relative 'deliverable' # Assuming deliverable.rb is in the same directory
+require_relative 'deliverable'
 
 module Iso
   module Data
     module Importer
       module Models
-        class DeliverableCollection < Lutaml::Model::Serializable
-          attribute :deliverables, Deliverable, collection: true
+        class DeliverableCollection < Lutaml::Model::Collection
+          instances :deliverables, Deliverable
 
-          key_value do
-            map "deliverables", to: :deliverables
+          jsonl do
+            map_instances to: :deliverables
           end
-
-          def initialize(attributes = {})
-            if attributes.is_a?(Array)
-              super(deliverables: attributes)
-            else
-              super(attributes)
-            end
-            @deliverables ||= [] # Ensure it's an array
-          end
-
-          extend Forwardable
-          def_delegators :@deliverables, :each, :map, :select, :find, :size, :count, :empty?, :[], :first, :last, :<<, :concat
         end
       end
     end
