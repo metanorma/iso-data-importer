@@ -82,7 +82,7 @@ module Iso
 
           if clean_all_if_no_specific || clean_cache
             puts "Cleaning cached files..."
-            require_relative "scrapers/base_scraper" # For BaseScraper::TMP_DIR
+            require_relative "parsers/base_parser" # For BaseScraper::TMP_DIR
             cache_dir = Iso::Data::Importer::Scrapers::BaseScraper::TMP_DIR
             if Dir.exist?(cache_dir)
               Dir.foreach(cache_dir) do |f|
