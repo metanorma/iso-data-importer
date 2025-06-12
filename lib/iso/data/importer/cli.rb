@@ -1,8 +1,8 @@
 # lib/iso/data/importer/cli.rb
 # frozen_string_literal: true
 
-require 'thor'
-require_relative 'orchestrator'
+require "thor"
+require_relative "orchestrator"
 
 module Iso
   module Data
@@ -25,7 +25,8 @@ module Iso
         # end
         # default_task :help
 
-        desc "update_all", "Fetches all ISO data, processes it, and exports to YAML/JSON files."
+        desc "update_all",
+             "Fetches all ISO data, processes it, and exports to YAML/JSON files."
         method_option :force_download,
                       aliases: "-f",
                       type: :boolean,
@@ -34,7 +35,7 @@ module Iso
         method_option :format,
                       aliases: "-o", # o for output format
                       type: :string,
-                      default: 'yaml',
+                      default: "yaml",
                       enum: %w[yaml json],
                       desc: "Output format for exported files (yaml or json)."
         def update_all
@@ -47,15 +48,14 @@ module Iso
           orchestrator = Orchestrator.new
           success = orchestrator.run_all(
             force_download: options[:force_download],
-            export_format: options[:format].to_sym # Convert string option to symbol
+            export_format: options[:format].to_sym, # Convert string option to symbol
           )
 
+          puts "---"
           if success
-            puts "---"
             puts "Data import process completed successfully."
           else
-            puts "---"
-            STDERR.puts "ERROR: Data import process failed. Check logs above for details."
+            warn "ERROR: Data import process failed. Check logs above for details."
           end
         end
 
@@ -82,12 +82,12 @@ module Iso
 
           if clean_all_if_no_specific || clean_cache
             puts "Cleaning cached files..."
-            require_relative 'scrapers/base_scraper' # For BaseScraper::TMP_DIR
+            require_relative "scrapers/base_scraper" # For BaseScraper::TMP_DIR
             cache_dir = Iso::Data::Importer::Scrapers::BaseScraper::TMP_DIR
             if Dir.exist?(cache_dir)
               Dir.foreach(cache_dir) do |f|
                 fn = File.join(cache_dir, f)
-                FileUtils.rm_rf(fn) if f != '.' && f != '..'
+                FileUtils.rm_rf(fn) if f != "." && f != ".."
               end
               puts "Cache directory cleaned: #{cache_dir}"
             else
@@ -111,10 +111,9 @@ module Iso
         # You might want a version command
         desc "version", "Prints the gem version"
         def version
-          require_relative 'version'
+          require_relative "version"
           puts Iso::Data::Importer::VERSION
         end
-
       end
     end
   end

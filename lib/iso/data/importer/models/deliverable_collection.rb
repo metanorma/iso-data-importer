@@ -1,8 +1,8 @@
 # lib/iso/data/importer/models/deliverable_collection.rb
 # frozen_string_literal: true
 
-require 'lutaml/model'
-require_relative 'deliverable'
+require "lutaml/model"
+require_relative "deliverable"
 
 module Iso
   module Data
