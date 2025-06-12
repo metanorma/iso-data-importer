@@ -9,11 +9,11 @@ module Iso
     module Importer
       module Scrapers
         class IcsScraper < BaseScraper
-          SOURCE_URL = "https://isopublicstorageprod.blob.core.windows.net/opendata/_latest/iso_ics/csv/ICS.csv"
-          LOCAL_FILENAME = "ICS.csv"
+          SOURCE_URL = 'https://isopublicstorageprod.blob.core.windows.net/opendata/_latest/iso_ics/xml/ICS-simple.xml'
+          LOCAL_FILENAME = 'ICS-simple.xml'
 
-          def scrape(force_download: false, &block_param) # Changed `&block` to `&block_param` to avoid conflict
-            log("Starting scrape for ISO ICS data...", 0, :info)
+          def scrape(force_download: false)
+            log('Starting scrape for ISO ICS data...', 0, :info)
             processed_count = 0
 
             downloaded_file_path = download_file(
@@ -23,32 +23,14 @@ module Iso
             )
 
             unless downloaded_file_path && File.exist?(downloaded_file_path)
-              log("Failed to download or find ICS data file. Aborting scrape.", 0, :error)
-              return processed_count
+              log('Failed to download or find ICS data file. Aborting scrape.', 0, :error)
+              return
             end
 
-            begin
-              each_csv_row(downloaded_file_path, clean_headers: false) do |csv_row_hash|
-                begin
-                  ics_entry = Iso::Data::Importer::Models::IcsEntry.new(csv_row_hash)
-                  block_param&.call(ics_entry) # Use the captured block_param
-                  processed_count += 1
-                rescue ArgumentError => e
-                  log("Error instantiating IcsEntry model: #{e.message}", 1, :warn)
-                  log("Problematic CSV data row: #{csv_row_hash.inspect[0..350]}...", 2, :warn)
-                rescue StandardError => e
-                  log("Unexpected error processing an ICS entry: #{e.class} - #{e.message}", 1, :error)
-                  log("Item data row: #{csv_row_hash.inspect[0..350]}...", 2, :error)
-                  log("Backtrace (item processing):\n#{e.backtrace.take(5).join("\n")}", 2, :error)
-                end
-              end
-            rescue StandardError => e
-              log("Critical error during CSV processing for ICS data: #{e.message}", 0, :error)
-              log("Backtrace (CSV processing):\n#{e.backtrace.take(5).join("\n")}", 1, :error)
-            end
-
-            log("Finished scraping ISO ICS data. Processed #{processed_count} items.", 0, :info)
-            return processed_count
+            Models::IcsEntryCollection.from_xml(downloaded_file_path)
+          rescue StandardError => e
+            log("Critical error during CSV processing for ICS data: #{e.message}", 0, :error)
+            log("Backtrace (CSV processing):\n#{e.backtrace.take(5).join("\n")}", 1, :error)
           end
         end
       end
