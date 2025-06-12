@@ -41,7 +41,7 @@ module Iso
           attribute :organization_liaisons, OrganizationReference, collection: true # Collection of OrganizationReference objects
           attribute :sort_key, :string
 
-          json do
+          key_value do
             map 'id', to: :id
             map 'reference', to: :reference
             map 'status', to: :status
