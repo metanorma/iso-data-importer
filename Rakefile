@@ -7,7 +7,7 @@ require "bundler/setup" # Ensures all gems from Gemfile are available
 # Otherwise, require the specific classes needed by the tasks:
 require_relative "lib/iso/data/importer/orchestrator"
 require_relative "lib/iso/data/importer/exporter"
-require_relative "lib/iso/data/importer/scrapers/base_scraper" # For BaseScraper::TMP_DIR
+require_relative "lib/iso/data/importer/parsers/base_parser" # For BaseScraper::TMP_DIR
 require 'fileutils' # For FileUtils in clean tasks
 
 namespace :data do

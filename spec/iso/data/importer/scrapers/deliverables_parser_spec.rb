@@ -1,4 +1,4 @@
-# spec/iso/data/importer/parsers/deliverables_scraper_spec.rb
+# spec/iso/data/importer/parsers/deliverables_parser_spec.rb
 require "spec_helper"
 
 require "iso/data/importer/scrapers/deliverables_scraper"
