@@ -1,21 +1,21 @@
 # spec/iso/data/importer/parsers/ics_parser_spec.rb
 require "spec_helper"
 
-require "iso/data/importer/scrapers/ics_scraper"
+require "iso/data/importer/parsers/ics_scraper"
 require "iso/data/importer/models/ics_entry"
 
 require "fileutils"
 require "httparty"
 require "csv"
 
-RSpec.describe Iso::Data::Importer::Scrapers::IcsScraper do
+RSpec.describe Iso::Data::Importer::Parsers::IcsParser do
   let(:scraper) { described_class.new }
 
-  let(:source_url) { Iso::Data::Importer::Scrapers::IcsScraper::SOURCE_URL }
+  let(:source_url) { Iso::Data::Importer::Parsers::IcsParser::SOURCE_URL }
   let(:local_filename) do
-    Iso::Data::Importer::Scrapers::IcsScraper::LOCAL_FILENAME
+    Iso::Data::Importer::Parsers::IcsParser::LOCAL_FILENAME
   end
-  let(:cache_dir) { Iso::Data::Importer::Scrapers::BaseScraper::TMP_DIR }
+  let(:cache_dir) { Iso::Data::Importer::Parsers::BaseParser::TMP_DIR }
   let(:cache_path) { File.join(cache_dir, local_filename) }
 
   let(:sample_csv_header) do

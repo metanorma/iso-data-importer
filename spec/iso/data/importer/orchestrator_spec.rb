@@ -37,7 +37,7 @@ RSpec.describe Iso::Data::Importer::Orchestrator do
   end
 
   before do
-    allow(Iso::Data::Importer::Scrapers).to receive(:fetch_all).and_return(mock_fetched_data)
+    allow(Iso::Data::Importer::Parsers).to receive(:fetch_all).and_return(mock_fetched_data)
     allow(Iso::Data::Importer::Exporter).to receive(:new).and_return(mock_exporter_instance)
 
     allow(mock_exporter_instance).to receive(:clean_output_files)
@@ -53,14 +53,14 @@ RSpec.describe Iso::Data::Importer::Orchestrator do
   describe "#run_all" do
     context "with default options (force_download: false, export_format: :yaml)" do
       it "calls Scrapers.fetch_all with force_download: false" do
-        expect(Iso::Data::Importer::Scrapers).to receive(:fetch_all)
+        expect(Iso::Data::Importer::Parsers).to receive(:fetch_all)
                                                    .with(force_download: false)
                                                    .and_return(mock_fetched_data)
         orchestrator.run_all
       end
 
       it "instantiates an Exporter and calls clean_output_files AFTER successful fetch" do
-        expect(Iso::Data::Importer::Scrapers).to receive(:fetch_all).ordered.and_return(mock_fetched_data)
+        expect(Iso::Data::Importer::Parsers).to receive(:fetch_all).ordered.and_return(mock_fetched_data)
         expect(Iso::Data::Importer::Exporter).to receive(:new).ordered.and_return(mock_exporter_instance)
         expect(mock_exporter_instance).to receive(:clean_output_files).ordered
         orchestrator.run_all
@@ -87,7 +87,7 @@ RSpec.describe Iso::Data::Importer::Orchestrator do
 
     context "with specified options" do
       it "passes force_download: true to Scrapers.fetch_all" do
-        expect(Iso::Data::Importer::Scrapers).to receive(:fetch_all)
+        expect(Iso::Data::Importer::Parsers).to receive(:fetch_all)
                                                    .with(force_download: true)
                                                    .and_return(mock_fetched_data)
         orchestrator.run_all(force_download: true)
@@ -109,7 +109,7 @@ RSpec.describe Iso::Data::Importer::Orchestrator do
     context "when Scrapers.fetch_all raises an error" do
       let(:fetch_error) { StandardError.new("Simulated fetch error") }
       before do
-        allow(Iso::Data::Importer::Scrapers).to receive(:fetch_all)
+        allow(Iso::Data::Importer::Parsers).to receive(:fetch_all)
                                                   .with(force_download: false)
                                                   .and_raise(fetch_error)
       end
@@ -142,7 +142,7 @@ RSpec.describe Iso::Data::Importer::Orchestrator do
         StandardError.new("Simulated exporter cleaning error")
       end
       before do
-        allow(Iso::Data::Importer::Scrapers).to receive(:fetch_all).and_return(mock_fetched_data)
+        allow(Iso::Data::Importer::Parsers).to receive(:fetch_all).and_return(mock_fetched_data)
         allow(Iso::Data::Importer::Exporter).to receive(:new).and_return(mock_exporter_instance)
         allow(mock_exporter_instance).to receive(:clean_output_files).and_raise(export_error)
       end

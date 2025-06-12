@@ -7,8 +7,8 @@ require_relative "../models/technical_committee" # Corrected model name
 module Iso
   module Data
     module Importer
-      module Scrapers
-        class TechnicalCommitteesScraper < BaseScraper
+      module Parsers
+        class TechnicalCommitteesParser < BaseParser
           SOURCE_URL = "https://isopublicstorageprod.blob.core.windows.net/opendata/_latest/iso_technical_committees/json/iso_technical_committees.jsonl"
           LOCAL_FILENAME = "iso_technical_committees.jsonl"
 

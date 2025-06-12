@@ -11,8 +11,8 @@ require_relative "lib/iso/data/importer/parsers/base_parser" # For BaseScraper::
 require 'fileutils' # For FileUtils in clean tasks
 
 namespace :data do
-  desc "Fetch all ISO data, process, and export. Accepts force_download and export_format. "\
-       "Usage: rake \"data:update_all[true,json]\" or rake data:update_all"
+  desc "Fetch all ISO data, process, and export. Accepts force_download and export_format. " \
+         "Usage: rake \"data:update_all[true,json]\" or rake data:update_all"
   task :update_all, [:force_download, :export_format] do |_task, args|
     puts "=> Starting full data update process..."
 
@@ -52,18 +52,18 @@ namespace :data do
 
   desc "Clean cached downloaded files from the tmp directory"
   task :clean_cache do
-    cache_dir = Iso::Data::Importer::Scrapers::BaseScraper::TMP_DIR
+    cache_dir = Iso::Data::Importer::Parsers::BaseParser::TMP_DIR
     if Dir.exist?(cache_dir)
       puts "=> Cleaning cache directory: #{cache_dir}..."
--      # FileUtils.rm_rf(cache_dir) # This would remove the 'tmp/iso_data_cache' dir itself
--      # To remove only contents:
+      -# FileUtils.rm_rf(cache_dir) # This would remove the 'tmp/iso_data_cache' dir itself
+      -# To remove only contents:
       Dir.foreach(cache_dir) do |f|
         fn = File.join(cache_dir, f)
         FileUtils.rm_rf(fn) if f != '.' && f != '..' # Avoid deleting . and ..
       end
--      # Or more simply if you want to remove everything inside:
--      # FileUtils.remove_dir(cache_dir, true) # true to force remove non-empty
--      # FileUtils.mkdir_p(cache_dir)          # then recreate it
+      -# Or more simply if you want to remove everything inside:
+      -# FileUtils.remove_dir(cache_dir, true) # true to force remove non-empty
+      -# FileUtils.mkdir_p(cache_dir)          # then recreate it
       puts "=> Cache directory cleaned."
     else
       puts "=> Cache directory #{cache_dir} does not exist. Nothing to clean."
