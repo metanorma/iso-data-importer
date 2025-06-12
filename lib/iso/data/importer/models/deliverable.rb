@@ -40,7 +40,7 @@ module Iso
           attribute :pages, LocalizedPages
           attribute :scope, LocalizedScope
 
-          json do
+          key_value do
             map 'id', to: :id
             map 'deliverableType', to: :deliverable_type
             map 'supplementType', to: :supplement_type
