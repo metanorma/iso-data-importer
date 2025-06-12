@@ -4,35 +4,7 @@ require 'csv'
 require 'iso/data/importer/models/ics_entry'
 
 RSpec.describe Iso::Data::Importer::Models::IcsEntry do
-  let(:fixture_path) { File.join(__dir__, '../../../../fixtures/ICS.csv') }
-
-  # Helper to get data from a specific data row of the CSV fixture (1-indexed)
-  # with key cleaning.
-  def get_csv_data_from_row(row_number)
-    # Read the entire file's content first to ensure consistent handling
-    # and remove potential BOM at the start of the file content.
-    file_content = File.read(fixture_path, encoding: 'UTF-8').sub("\xEF\xBB\xBF", '')
-
-    # Parse the content. `headers: true` will use the first line for keys.
-    # `liberal_parsing: true` can help with minor CSV format deviations.
-    csv_table = CSV.parse(file_content, headers: true, liberal_parsing: true)
-
-    data_row_index = row_number - 1
-    if data_row_index >= csv_table.length || data_row_index < 0
-      raise "CSV fixture data row #{row_number} (index #{data_row_index}) not found. Total data rows: #{csv_table.length}"
-    end
-
-    original_hash = csv_table[data_row_index].to_h
-
-    # Clean the keys of the hash (remove BOM if attached to first header, strip whitespace)
-    cleaned_hash = {}
-    original_hash.each_pair do |key, value|
-      cleaned_key = key.is_a?(String) ? key.gsub("\uFEFF", '').strip : key
-      cleaned_hash[cleaned_key] = value
-    end
-
-    return cleaned_hash
-  end
+  let(:fixture_path) { File.join(__dir__, '../../../../fixtures/ICS-simple.xml') }
 
   # --- Test Scenarios ---
 
@@ -42,7 +14,7 @@ RSpec.describe Iso::Data::Importer::Models::IcsEntry do
     subject(:ics_entry) { described_class.new(csv_row_data) }
 
     it 'correctly assigns :identifier' do
-      expect(ics_entry.identifier).to eq("01")
+      expect(ics_entry.identifier).to eq('01')
     end
 
     it 'correctly assigns :parent as nil (from empty CSV field)' do
@@ -50,11 +22,11 @@ RSpec.describe Iso::Data::Importer::Models::IcsEntry do
     end
 
     it 'correctly assigns :title_en' do
-      expect(ics_entry.title_en).to eq("Generalities. Terminology. Standardization. Documentation")
+      expect(ics_entry.title_en).to eq('Generalities. Terminology. Standardization. Documentation')
     end
 
     it 'correctly assigns :title_fr' do
-      expect(ics_entry.title_fr).to eq("Généralités. Terminologie. Normalisation. Documentation")
+      expect(ics_entry.title_fr).to eq('Généralités. Terminologie. Normalisation. Documentation')
     end
 
     it 'assigns :scope_en as nil (from empty CSV field)' do
@@ -72,7 +44,7 @@ RSpec.describe Iso::Data::Importer::Models::IcsEntry do
     subject(:ics_entry) { described_class.new(csv_row_data) }
 
     it 'correctly assigns :identifier' do
-      expect(ics_entry.identifier).to eq("03")
+      expect(ics_entry.identifier).to eq('03')
     end
 
     it 'correctly assigns :parent as nil' do
@@ -80,7 +52,7 @@ RSpec.describe Iso::Data::Importer::Models::IcsEntry do
     end
 
     it 'correctly assigns :title_en' do
-      expect(ics_entry.title_en).to eq("Services. Company organization, management and quality. Administration. Transport. Sociology")
+      expect(ics_entry.title_en).to eq('Services. Company organization, management and quality. Administration. Transport. Sociology')
     end
     # Add other assertions for row 2 if its data differs significantly for other fields not covered by row 1
   end
@@ -95,70 +67,67 @@ RSpec.describe Iso::Data::Importer::Models::IcsEntry do
     # If you pre-processed in the helper, this test would validate that.
     # Since you manually fixed the file, we're testing the manually fixed data.
     let(:csv_row_data) do
-        begin
-            get_csv_data_from_row(660)
-        rescue RuntimeError => e
-            # If row 660 doesn't exist, skip these tests or use a different known row
-            # For now, let's provide a hash that *would* be the result of parsing the fixed line
-            # This makes the test runnable even if row 660 isn't in a small test fixture.
-            # In a real scenario, you'd ensure row 660 is available.
-            warn "WARN: CSV data row 660 not found, using mock data for this context. Details: #{e.message}"
-            {
-                "identifier" => "21.040.30", "parent" => "21.040",
-                "titleEn" => "Special screw threads", "titleFr" => "Filetages spéciaux",
-                "scopeEn" => "Including miniature screw threads, pipe threads, etc.",
-                # This is how the CSV parser should interpret the corrected (dits ""gaz"")
-                "scopeFr" => "Y compris filetages miniatures, filetages pour tuyauterie (dits \"gaz\"), etc."
-            }
-        end
+      get_csv_data_from_row(660)
+    rescue RuntimeError => e
+      # If row 660 doesn't exist, skip these tests or use a different known row
+      # For now, let's provide a hash that *would* be the result of parsing the fixed line
+      # This makes the test runnable even if row 660 isn't in a small test fixture.
+      # In a real scenario, you'd ensure row 660 is available.
+      warn "WARN: CSV data row 660 not found, using mock data for this context. Details: #{e.message}"
+      {
+        'identifier' => '21.040.30', 'parent' => '21.040',
+        'titleEn' => 'Special screw threads', 'titleFr' => 'Filetages spéciaux',
+        'scopeEn' => 'Including miniature screw threads, pipe threads, etc.',
+        # This is how the CSV parser should interpret the corrected (dits ""gaz"")
+        'scopeFr' => 'Y compris filetages miniatures, filetages pour tuyauterie (dits "gaz"), etc.'
+      }
     end
     subject(:ics_entry) { described_class.new(csv_row_data) }
 
     it 'correctly assigns :identifier' do
-      expect(ics_entry.identifier).to eq("21.040.30")
+      expect(ics_entry.identifier).to eq('21.040.30')
     end
     it 'correctly assigns :parent' do
-      expect(ics_entry.parent).to eq("21.040")
+      expect(ics_entry.parent).to eq('21.040')
     end
     it 'correctly assigns :title_en' do
-      expect(ics_entry.title_en).to eq("Special screw threads")
+      expect(ics_entry.title_en).to eq('Special screw threads')
     end
     it 'correctly assigns :scope_fr containing the (dits "gaz") string' do
-      expect(ics_entry.scope_fr).to eq("Y compris filetages miniatures, filetages pour tuyauterie (dits \"gaz\"), etc.")
+      expect(ics_entry.scope_fr).to eq('Y compris filetages miniatures, filetages pour tuyauterie (dits "gaz"), etc.')
     end
   end
-
 
   context 'when initialized with data having parent and scopes (hypothetical or from a known fixture line)' do
     # Ideally, find a line in your fixture that matches this scenario.
     # If not, this manually defined hash is a good way to test the logic.
     let(:csv_style_hash_with_parent_and_scopes) do
       {
-        "identifier" => "01.020", # Example: A sub-level ICS
-        "parent" => "01",
-        "titleEn" => "Terminology (principles and coordination)",
-        "titleFr" => "Terminologie (principes et coordination)",
-        "scopeEn" => "Includes terminology work.",
-        "scopeFr" => "Y compris les travaux terminologiques."
+        'identifier' => '01.020', # Example: A sub-level ICS
+        'parent' => '01',
+        'titleEn' => 'Terminology (principles and coordination)',
+        'titleFr' => 'Terminologie (principes et coordination)',
+        'scopeEn' => 'Includes terminology work.',
+        'scopeFr' => 'Y compris les travaux terminologiques.'
       }
     end
     subject(:ics_entry) { described_class.new(csv_style_hash_with_parent_and_scopes) }
 
-    it { expect(ics_entry.identifier).to eq("01.020") }
-    it { expect(ics_entry.parent).to eq("01") }
-    it { expect(ics_entry.title_en).to eq("Terminology (principles and coordination)") }
-    it { expect(ics_entry.title_fr).to eq("Terminologie (principes et coordination)") }
-    it { expect(ics_entry.scope_en).to eq("Includes terminology work.") }
-    it { expect(ics_entry.scope_fr).to eq("Y compris les travaux terminologiques.") }
+    it { expect(ics_entry.identifier).to eq('01.020') }
+    it { expect(ics_entry.parent).to eq('01') }
+    it { expect(ics_entry.title_en).to eq('Terminology (principles and coordination)') }
+    it { expect(ics_entry.title_fr).to eq('Terminologie (principes et coordination)') }
+    it { expect(ics_entry.scope_en).to eq('Includes terminology work.') }
+    it { expect(ics_entry.scope_fr).to eq('Y compris les travaux terminologiques.') }
   end
 
   context 'when initialized with a hash missing optional keys (e.g., scopeEn, scopeFr)' do
     let(:hash_missing_scopes) do
       {
-        "identifier" => "01.040",
-        "parent" => "01",
-        "titleEn" => "Vocabularies",
-        "titleFr" => "Vocabulaires"
+        'identifier' => '01.040',
+        'parent' => '01',
+        'titleEn' => 'Vocabularies',
+        'titleFr' => 'Vocabulaires'
         # scopeEn and scopeFr keys are absent
       }
     end
