@@ -1,8 +1,8 @@
 # lib/iso/data/importer/models/technical_committee_collection.rb
 # frozen_string_literal: true
 
-require 'lutaml/model'
-require_relative 'technical_committee'
+require "lutaml/model"
+require_relative "technical_committee"
 
 module Iso
   module Data

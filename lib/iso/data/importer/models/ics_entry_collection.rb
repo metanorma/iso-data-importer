@@ -1,7 +1,7 @@
 # lib/iso/data/importer/models/ics_entry_collection.rb
 # frozen_string_literal: true
 
-require 'lutaml/model'
+require "lutaml/model"
 
 module Iso
   module Data
@@ -12,7 +12,8 @@ module Iso
           attribute :lang, :string
           xml do
             # namespace 'http://www.w3.org/XML/1998/namespace'
-            map_attribute 'lang', to: :lang, namespace: 'http://www.w3.org/XML/1998/namespace', prefix: 'xml'
+            map_attribute "lang", to: :lang,
+                                  namespace: "http://www.w3.org/XML/1998/namespace", prefix: "xml"
             map_content to: :value
           end
         end
@@ -27,9 +28,9 @@ module Iso
           attribute :title, LocaleString, collection: true
 
           xml do
-            root 'field'
-            map_element 'identifier', to: :identifier
-            map_element 'title', to: :title
+            root "field"
+            map_element "identifier", to: :identifier
+            map_element "title", to: :title
           end
         end
 
@@ -42,17 +43,17 @@ module Iso
           attribute :identifier, :string
           attribute :note, LocaleString, collection: true
           xml do
-            root 'reference'
-            map_element 'identifier', to: :identifier
-            map_element 'note', to: :note
+            root "reference"
+            map_element "identifier", to: :identifier
+            map_element "note", to: :note
           end
         end
 
         class IcsReferenceCollection < Lutaml::Model::Serializable
           attribute :references, IcsReference, collection: true
           xml do
-            root 'references'
-            map_element 'reference', to: :references
+            root "references"
+            map_element "reference", to: :references
           end
         end
 
@@ -82,12 +83,12 @@ module Iso
           attribute :references, IcsReferenceCollection
 
           xml do
-            root 'group'
-            map_element 'identifier', to: :identifier
-            map_element 'field', to: :field
-            map_element 'title', to: :title
-            map_element 'scope', to: :scope
-            map_element 'references', to: :references
+            root "group"
+            map_element "identifier", to: :identifier
+            map_element "field", to: :field
+            map_element "title", to: :title
+            map_element "scope", to: :scope
+            map_element "references", to: :references
           end
         end
 
@@ -120,12 +121,12 @@ module Iso
           attribute :references, IcsReferenceCollection
 
           xml do
-            root 'subGroup'
-            map_element 'identifier', to: :identifier
-            map_element 'group', to: :group
-            map_element 'title', to: :title
-            map_element 'scope', to: :scope
-            map_element 'references', to: :references
+            root "subGroup"
+            map_element "identifier", to: :identifier
+            map_element "group", to: :group
+            map_element "title", to: :title
+            map_element "scope", to: :scope
+            map_element "references", to: :references
           end
         end
 
@@ -135,11 +136,11 @@ module Iso
           attribute :sub_groups, IcsSubGroup, collection: true
 
           xml do
-            root 'fields'
+            root "fields"
 
-            map_element 'field', to: :fields
-            map_element 'group', to: :groups
-            map_element 'subGroup', to: :sub_groups
+            map_element "field", to: :fields
+            map_element "group", to: :groups
+            map_element "subGroup", to: :sub_groups
           end
         end
       end

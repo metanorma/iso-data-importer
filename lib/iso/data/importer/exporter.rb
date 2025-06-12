@@ -1,14 +1,14 @@
 # lib/iso/data/importer/exporter.rb
 # frozen_string_literal: true
 
-require 'yaml'
-require 'fileutils'
-require 'json'
+require "yaml"
+require "fileutils"
+require "json"
 
 # Assuming models are loaded by the time Exporter is used
-require_relative 'models/deliverable_collection'
-require_relative 'models/technical_committee_collection'
-require_relative 'models/ics_entry_collection'
+require_relative "models/deliverable_collection"
+require_relative "models/technical_committee_collection"
+require_relative "models/ics_entry_collection"
 
 module Iso
   module Data
@@ -22,7 +22,9 @@ module Iso
         ALL_ICS_FILENAME_BASE = "ics"
 
         def initialize
-          log("Initializing Exporter and ensuring base output directory exists...", :info)
+          log(
+            "Initializing Exporter and ensuring base output directory exists...", :info
+          )
           ensure_output_directory(DATA_OUTPUT_DIR)
         end
 
@@ -32,13 +34,16 @@ module Iso
 
         # Clears the collection output files (both .yaml and .json).
         def clean_output_files
-          log("Cleaning collection output files from #{DATA_OUTPUT_DIR}...", :info)
-          base_filenames = [ALL_DELIVERABLES_FILENAME_BASE, ALL_TCS_FILENAME_BASE, ALL_ICS_FILENAME_BASE]
+          log("Cleaning collection output files from #{DATA_OUTPUT_DIR}...",
+              :info)
+          base_filenames = [ALL_DELIVERABLES_FILENAME_BASE,
+                            ALL_TCS_FILENAME_BASE, ALL_ICS_FILENAME_BASE]
           extensions = [".yaml", ".json"]
 
           base_filenames.each do |base_name|
             extensions.each do |ext|
-              filepath_to_remove = File.join(self.class::DATA_OUTPUT_DIR, "#{base_name}#{ext}")
+              filepath_to_remove = File.join(self.class::DATA_OUTPUT_DIR,
+                                             "#{base_name}#{ext}")
               FileUtils.rm_f(filepath_to_remove)
             end
           end
@@ -46,9 +51,10 @@ module Iso
         end
 
         # Generic export method for a whole collection to a single file
-        def export_collection_to_single_file(collection, base_filename, data_type_name, format: :yaml)
+        def export_collection_to_single_file(collection, base_filename,
+data_type_name, format: :yaml)
           # Check if collection is nil or empty using respond_to? for safety with doubles in tests
-          if collection.nil? || (collection.respond_to?(:empty?) && collection.empty?) || (collection.respond_to?(:size) && collection.size == 0)
+          if collection.nil? || (collection.respond_to?(:empty?) && collection.empty?) || (collection.respond_to?(:size) && collection.empty?)
             log("No #{data_type_name} to export.", :info)
             return
           end
@@ -57,14 +63,18 @@ module Iso
           collection_size = collection.respond_to?(:size) ? collection.size : "unknown number of"
 
           file_extension = format == :json ? ".json" : ".yaml"
-          filepath = File.join(self.class::DATA_OUTPUT_DIR, "#{base_filename}#{file_extension}")
+          filepath = File.join(self.class::DATA_OUTPUT_DIR,
+                               "#{base_filename}#{file_extension}")
 
-          log("Exporting #{collection_size} #{data_type_name} to single file: #{filepath} (format: #{format})...", :info)
+          log("Exporting #{collection_size} #{data_type_name} to single file: #{filepath} (format: #{format})...",
+              :info)
 
           output_string = serialize_collection(collection, format)
           File.write(filepath, output_string)
 
-          log("#{data_type_name} export (collection file, #{format}) complete to #{filepath}", :info)
+          log(
+            "#{data_type_name} export (collection file, #{format}) complete to #{filepath}", :info
+          )
         end
 
         def export_deliverables(deliverable_collection, format: :yaml)
@@ -72,7 +82,7 @@ module Iso
             deliverable_collection,
             ALL_DELIVERABLES_FILENAME_BASE,
             "Deliverables",
-            format: format
+            format: format,
           )
         end
 
@@ -81,7 +91,7 @@ module Iso
             tc_collection,
             ALL_TCS_FILENAME_BASE,
             "Technical Committees",
-            format: format
+            format: format,
           )
         end
 
@@ -90,7 +100,7 @@ module Iso
             ics_collection,
             ALL_ICS_FILENAME_BASE,
             "ICS Entries",
-            format: format
+            format: format,
           )
         end
 
@@ -111,7 +121,7 @@ module Iso
           prefix = case severity
                    when :error then "ERROR: "
                    when :warn  then "WARN:  "
-                   else            "INFO:  "
+                   else "INFO:  "
                    end
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} #{prefix}#{message}"
         end

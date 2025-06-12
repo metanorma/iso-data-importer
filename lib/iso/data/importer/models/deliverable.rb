@@ -1,4 +1,4 @@
-require 'lutaml/model'
+require "lutaml/model"
 
 module Iso
   module Data
@@ -9,8 +9,8 @@ module Iso
           attribute :fr, :integer
 
           key_value do
-            map 'en', to: :en
-            map 'fr', to: :fr
+            map "en", to: :en
+            map "fr", to: :fr
           end
         end
 
@@ -19,8 +19,8 @@ module Iso
           attribute :fr, :string
 
           key_value do
-            map 'en', to: :en
-            map 'fr', to: :fr
+            map "en", to: :en
+            map "fr", to: :fr
           end
         end
 
@@ -41,20 +41,20 @@ module Iso
           attribute :scope, LocalizedScope
 
           key_value do
-            map 'id', to: :id
-            map 'deliverableType', to: :deliverable_type
-            map 'supplementType', to: :supplement_type
-            map 'reference', to: :reference
-            map 'publicationDate', to: :publication_date
-            map 'edition', to: :edition
-            map 'icsCode', to: :ics_codes
-            map 'ownerCommittee', to: :owner_committee
-            map 'currentStage', to: :current_stage
-            map 'replaces', to: :replaces_ids
-            map 'replacedBy', to: :replaced_by_ids
-            map 'languages', to: :languages
-            map 'pages', to: :pages
-            map 'scope', to: :scope
+            map "id", to: :id
+            map "deliverableType", to: :deliverable_type
+            map "supplementType", to: :supplement_type
+            map "reference", to: :reference
+            map "publicationDate", to: :publication_date
+            map "edition", to: :edition
+            map "icsCode", to: :ics_codes
+            map "ownerCommittee", to: :owner_committee
+            map "currentStage", to: :current_stage
+            map "replaces", to: :replaces_ids
+            map "replacedBy", to: :replaced_by_ids
+            map "languages", to: :languages
+            map "pages", to: :pages
+            map "scope", to: :scope
           end
         end
       end

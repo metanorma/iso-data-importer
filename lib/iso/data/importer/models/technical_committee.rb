@@ -4,7 +4,7 @@
 
 # frozen_string_literal: true
 
-require 'lutaml/model'
+require "lutaml/model"
 
 module Iso
   module Data
@@ -42,20 +42,20 @@ module Iso
           attribute :sort_key, :string
 
           key_value do
-            map 'id', to: :id
-            map 'reference', to: :reference
-            map 'status', to: :status
-            map 'title', to: :title
-            map 'secretariat', to: :secretariat
-            map 'creationDate', to: :creation_date
-            map 'scope', to: :scope
-            map 'parentId', to: :parent_id
-            map 'childrenId', to: :children_ids
-            map 'pMembers', to: :p_members
-            map 'oMembers', to: :o_members
-            map 'committeeLiaisons', to: :committee_liaisons
-            map 'organizationLiaisons', to: :organization_liaisons
-            map 'sortKey', to: :sort_key
+            map "id", to: :id
+            map "reference", to: :reference
+            map "status", to: :status
+            map "title", to: :title
+            map "secretariat", to: :secretariat
+            map "creationDate", to: :creation_date
+            map "scope", to: :scope
+            map "parentId", to: :parent_id
+            map "childrenId", to: :children_ids
+            map "pMembers", to: :p_members
+            map "oMembers", to: :o_members
+            map "committeeLiaisons", to: :committee_liaisons
+            map "organizationLiaisons", to: :organization_liaisons
+            map "sortKey", to: :sort_key
           end
         end
       end

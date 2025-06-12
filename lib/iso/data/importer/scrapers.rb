@@ -2,20 +2,20 @@
 # frozen_string_literal: true
 
 # Require individual scraper classes
-require_relative 'scrapers/deliverables_scraper'
-require_relative 'scrapers/technical_committees_scraper'
-require_relative 'scrapers/ics_scraper'
+require_relative "scrapers/deliverables_scraper"
+require_relative "scrapers/technical_committees_scraper"
+require_relative "scrapers/ics_scraper"
 
 # Require collection model classes
-require_relative 'models/deliverable_collection'
-require_relative 'models/technical_committee_collection'
-require_relative 'models/ics_entry_collection'
+require_relative "models/deliverable_collection"
+require_relative "models/technical_committee_collection"
+require_relative "models/ics_entry_collection"
 
 # We also need the individual item models if we want to be explicit about types,
 # though scrapers already require them.
-require_relative 'models/deliverable'
-require_relative 'models/technical_committee'
-require_relative 'models/ics_entry'
+require_relative "models/deliverable"
+require_relative "models/technical_committee"
+require_relative "models/ics_entry"
 
 module Iso
   module Data
@@ -75,7 +75,7 @@ module Iso
           {
             deliverables: deliverables_collection,
             technical_committees: tc_collection,
-            ics_entries: ics_collection
+            ics_entries: ics_collection,
           }
         end
       end
