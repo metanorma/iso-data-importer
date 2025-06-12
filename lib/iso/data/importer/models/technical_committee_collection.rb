@@ -2,31 +2,19 @@
 # frozen_string_literal: true
 
 require 'lutaml/model'
-require 'forwardable'
 require_relative 'technical_committee'
 
 module Iso
   module Data
     module Importer
       module Models
-        class TechnicalCommitteeCollection < Lutaml::Model::Serializable
-          attribute :technical_committees, TechnicalCommittee, collection: true
+        class TechnicalCommitteeCollection < Lutaml::Model::Collection
+          # Define a collection of TechnicalCommittee instances
+          instances :technical_committees, TechnicalCommittee
 
           key_value do
-            map "technical_committees", to: :technical_committees
+            map_instances to: :technical_committees
           end
-
-          def initialize(attributes = {})
-            if attributes.is_a?(Array)
-              super(technical_committees: attributes)
-            else
-              super(attributes)
-            end
-            @technical_committees ||= []
-          end
-
-          extend Forwardable
-          def_delegators :@technical_committees, :each, :map, :select, :find, :size, :count, :empty?, :[], :first, :last, :<<, :concat
         end
       end
     end

@@ -4,8 +4,7 @@
 
 # frozen_string_literal: true
 
-require "lutaml/model"
-require "date" # For Date type coercion
+require 'lutaml/model'
 
 module Iso
   module Data
@@ -15,12 +14,6 @@ module Iso
         class LocalizedString < Lutaml::Model::Serializable
           attribute :en, :string
           attribute :fr, :string
-
-          def initialize(attributes = {})
-            super()
-            self.en = attributes['en'] if attributes.key?('en')
-            self.fr = attributes['fr'] if attributes.key?('fr')
-          end
         end
 
         # Represents an organization reference (e.g., for secretariat, members, liaisons)
@@ -28,13 +21,6 @@ module Iso
           attribute :id, :integer
           attribute :acronym, :string
           attribute :reference, :string # Specifically for committeeLiaisons
-
-          def initialize(attributes = {})
-            super() # Initialize Lutaml base
-            self.id = attributes['id'] if attributes.key?('id')
-            self.acronym = attributes['acronym'] if attributes.key?('acronym')
-            self.reference = attributes['reference'] if attributes.key?('reference')
-          end
         end
 
         # Represents a single ISO Technical Committee or Sub-Committee
@@ -55,53 +41,21 @@ module Iso
           attribute :organization_liaisons, OrganizationReference, collection: true # Collection of OrganizationReference objects
           attribute :sort_key, :string
 
-          def initialize(raw_json_attributes = {})
-            super() # Initialize Lutaml base first
-
-            self.id = raw_json_attributes['id']
-            self.reference = raw_json_attributes['reference']
-            self.status = raw_json_attributes['status']
-
-            if raw_json_attributes['title'].is_a?(Hash)
-              self.title = LocalizedString.new(raw_json_attributes['title'])
-            else
-              self.title = nil
-            end
-
-            if raw_json_attributes['secretariat'].is_a?(Hash)
-              self.secretariat = OrganizationReference.new(raw_json_attributes['secretariat'])
-            else
-              self.secretariat = nil
-            end
-
-            if raw_json_attributes['creationDate'].is_a?(String) && !raw_json_attributes['creationDate'].empty?
-              self.creation_date = Date.parse(raw_json_attributes['creationDate'])
-            else
-              self.creation_date = nil
-            end
-
-            if raw_json_attributes['scope'].is_a?(Hash)
-              self.scope = LocalizedString.new(raw_json_attributes['scope'])
-            else
-              self.scope = nil
-            end
-
-            self.parent_id = raw_json_attributes['parentId']
-            self.children_ids = raw_json_attributes['childrenId'].is_a?(Array) ? raw_json_attributes['childrenId'] : []
-
-            self.p_members = map_to_organization_references(raw_json_attributes['pMembers'])
-            self.o_members = map_to_organization_references(raw_json_attributes['oMembers'])
-            self.committee_liaisons = map_to_organization_references(raw_json_attributes['committeeLiaisons'])
-            self.organization_liaisons = map_to_organization_references(raw_json_attributes['organizationLiaisons'])
-
-            self.sort_key = raw_json_attributes['sortKey']
-          end
-
-          private
-
-          def map_to_organization_references(array_of_hashes)
-            return [] unless array_of_hashes.is_a?(Array)
-            array_of_hashes.map { |hash_data| OrganizationReference.new(hash_data) }
+          json do
+            map 'id', to: :id
+            map 'reference', to: :reference
+            map 'status', to: :status
+            map 'title', to: :title
+            map 'secretariat', to: :secretariat
+            map 'creationDate', to: :creation_date
+            map 'scope', to: :scope
+            map 'parentId', to: :parent_id
+            map 'childrenId', to: :children_ids
+            map 'pMembers', to: :p_members
+            map 'oMembers', to: :o_members
+            map 'committeeLiaisons', to: :committee_liaisons
+            map 'organizationLiaisons', to: :organization_liaisons
+            map 'sortKey', to: :sort_key
           end
         end
       end
