@@ -99,10 +99,9 @@ module Iso
         def serialize_collection(collection, format)
           case format.to_sym
           when :yaml
-            # Relies on collection responding to .to_yaml or .to_h (Lutaml default)
-            collection.respond_to?(:to_yaml) ? collection.to_yaml : collection.to_h.to_yaml
+            collection.to_yaml
           when :json
-            collection.respond_to?(:to_json) ? collection.to_json : collection.to_h.to_json
+            collection.to_json
           else
             raise ArgumentError, "Unsupported export format: #{format}"
           end

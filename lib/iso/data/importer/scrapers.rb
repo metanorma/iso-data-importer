@@ -2,21 +2,20 @@
 # frozen_string_literal: true
 
 # Require individual scraper classes
-require_relative "scrapers/deliverables_scraper"
-require_relative "scrapers/technical_committees_scraper"
-require_relative "scrapers/ics_scraper"
+require_relative 'scrapers/deliverables_scraper'
+require_relative 'scrapers/technical_committees_scraper'
+require_relative 'scrapers/ics_scraper'
 
 # Require collection model classes
-require_relative "models/deliverable_collection"
-require_relative "models/technical_committee_collection"
-require_relative "models/ics_entry_collection"
+require_relative 'models/deliverable_collection'
+require_relative 'models/technical_committee_collection'
+require_relative 'models/ics_entry_collection'
 
 # We also need the individual item models if we want to be explicit about types,
 # though scrapers already require them.
-require_relative "models/deliverable"
-require_relative "models/technical_committee"
-require_relative "models/ics_entry"
-
+require_relative 'models/deliverable'
+require_relative 'models/technical_committee'
+require_relative 'models/ics_entry'
 
 module Iso
   module Data
@@ -31,12 +30,9 @@ module Iso
           # Using puts for simple logging; a dedicated logger could be integrated later.
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Starting to fetch ISO Deliverables data..."
           scraper = DeliverablesScraper.new
-          deliverables_array = []
-          scraper.scrape(force_download: force_download) do |deliverable|
-            deliverables_array << deliverable
-          end
-          puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Fetched #{deliverables_array.size} ISO Deliverables."
-          Models::DeliverableCollection.new(deliverables_array)
+          collection = scraper.scrape(force_download: force_download)
+          puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Fetched #{collection.size} ISO Deliverables."
+          collection
         end
 
         # Fetch all ISO technical committees and return them as a TechnicalCommitteeCollection.
@@ -46,12 +42,9 @@ module Iso
         def self.fetch_technical_committees(force_download: false)
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Starting to fetch ISO Technical Committees data..."
           scraper = TechnicalCommitteesScraper.new
-          committees_array = []
-          scraper.scrape(force_download: force_download) do |committee|
-            committees_array << committee
-          end
-          puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Fetched #{committees_array.size} ISO Technical Committees."
-          Models::TechnicalCommitteeCollection.new(committees_array)
+          collection = scraper.scrape(force_download: force_download)
+          puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Fetched #{collection.size} ISO Technical Committees."
+          collection
         end
 
         # Fetch all ISO ICS entries and return them as an IcsEntryCollection.
@@ -61,12 +54,9 @@ module Iso
         def self.fetch_ics_entries(force_download: false)
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Starting to fetch ISO ICS data..."
           scraper = IcsScraper.new
-          ics_entries_array = []
-          scraper.scrape(force_download: force_download) do |ics_entry|
-            ics_entries_array << ics_entry
-          end
-          puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Fetched #{ics_entries_array.size} ISO ICS entries."
-          Models::IcsEntryCollection.new(ics_entries_array)
+          collection = scraper.scrape(force_download: force_download)
+          puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Fetched #{collection.size} ISO ICS entries."
+          collection
         end
 
         # Fetch all available ISO open data.
