@@ -7,8 +7,8 @@ require_relative "../models/ics_entry"
 module Iso
   module Data
     module Importer
-      module Scrapers
-        class IcsScraper < BaseScraper
+      module Parsers
+        class IcsParser < BaseParser
           SOURCE_URL = "https://isopublicstorageprod.blob.core.windows.net/opendata/_latest/iso_ics/xml/ICS-simple.xml"
           LOCAL_FILENAME = "ICS-simple.xml"
 

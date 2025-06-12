@@ -9,8 +9,8 @@ require "csv"
 module Iso
   module Data
     module Importer
-      module Scrapers
-        class BaseScraper
+      module Parsers
+        class BaseParser
           TMP_DIR = "tmp/iso_data_cache"
 
           def initialize

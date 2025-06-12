@@ -19,7 +19,7 @@ module Iso
 
           begin
             log("Fetching all data collections...", :info)
-            data_collections = Scrapers.fetch_all(force_download: force_download)
+            data_collections = Parsers.fetch_all(force_download: force_download)
             log("Data fetching complete.", :info)
 
             # Instantiate Exporter and clean files only AFTER successful fetch

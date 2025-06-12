@@ -7,8 +7,8 @@ require_relative "models/deliverable"
 module Iso
   module Data
     module Importer
-      module Scrapers
-        class DeliverablesScraper < BaseScraper
+      module Parsers
+        class DeliverablesParser < BaseParser
           SOURCE_URL = "https://isopublicstorageprod.blob.core.windows.net/opendata/_latest/iso_deliverables_metadata/json/iso_deliverables_metadata.jsonl"
           LOCAL_FILENAME = "iso_deliverables_metadata.jsonl"
 

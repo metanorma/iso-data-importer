@@ -1,22 +1,22 @@
 # spec/iso/data/importer/parsers/technical_committees_parser_spec.rb
 require "spec_helper"
 
-require "iso/data/importer/scrapers/technical_committees_scraper"
+require "iso/data/importer/parsers/technical_committees_scraper"
 require "iso/data/importer/models/technical_committee"
 
 require "fileutils"
 require "httparty"
 
-RSpec.describe Iso::Data::Importer::Scrapers::TechnicalCommitteesScraper do
+RSpec.describe Iso::Data::Importer::Parsers::TechnicalCommitteesParser do
   let(:scraper) { described_class.new }
 
   let(:source_url) do
-    Iso::Data::Importer::Scrapers::TechnicalCommitteesScraper::SOURCE_URL
+    Iso::Data::Importer::Parsers::TechnicalCommitteesParser::SOURCE_URL
   end
   let(:local_filename) do
-    Iso::Data::Importer::Scrapers::TechnicalCommitteesScraper::LOCAL_FILENAME
+    Iso::Data::Importer::Parsers::TechnicalCommitteesParser::LOCAL_FILENAME
   end
-  let(:cache_dir) { Iso::Data::Importer::Scrapers::BaseScraper::TMP_DIR }
+  let(:cache_dir) { Iso::Data::Importer::Parsers::BaseParser::TMP_DIR }
   let(:cache_path) { File.join(cache_dir, local_filename) }
 
   around(:each) do |example|

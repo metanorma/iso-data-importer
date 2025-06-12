@@ -17,7 +17,7 @@ require "iso/data/importer/parsers/deliverables_parser"
 require "iso/data/importer/parsers/technical_committees_parser"
 require "iso/data/importer/parsers/ics_parser"
 
-RSpec.describe Iso::Data::Importer::Scrapers do
+RSpec.describe Iso::Data::Importer::Parsers do
   # Create mock item model instances for testing
   let(:mock_deliverable1) do
     instance_double(Iso::Data::Importer::Models::Deliverable, id: 1)
@@ -40,20 +40,20 @@ RSpec.describe Iso::Data::Importer::Scrapers do
 
   # Mock instances of the individual parsers
   let(:deliverables_scraper_instance) do
-    instance_double(Iso::Data::Importer::Scrapers::DeliverablesScraper)
+    instance_double(Iso::Data::Importer::Parsers::DeliverablesParser)
   end
   let(:tc_scraper_instance) do
-    instance_double(Iso::Data::Importer::Scrapers::TechnicalCommitteesScraper)
+    instance_double(Iso::Data::Importer::Parsers::TechnicalCommitteesParser)
   end
   let(:ics_scraper_instance) do
-    instance_double(Iso::Data::Importer::Scrapers::IcsScraper)
+    instance_double(Iso::Data::Importer::Parsers::IcsParser)
   end
 
   before do
     # Stub the .new method for each scraper class to return our mock instances
-    allow(Iso::Data::Importer::Scrapers::DeliverablesScraper).to receive(:new).and_return(deliverables_scraper_instance)
-    allow(Iso::Data::Importer::Scrapers::TechnicalCommitteesScraper).to receive(:new).and_return(tc_scraper_instance)
-    allow(Iso::Data::Importer::Scrapers::IcsScraper).to receive(:new).and_return(ics_scraper_instance)
+    allow(Iso::Data::Importer::Parsers::DeliverablesParser).to receive(:new).and_return(deliverables_scraper_instance)
+    allow(Iso::Data::Importer::Parsers::TechnicalCommitteesParser).to receive(:new).and_return(tc_scraper_instance)
+    allow(Iso::Data::Importer::Parsers::IcsParser).to receive(:new).and_return(ics_scraper_instance)
 
     # Default stub for download methods: yield nothing, return count 0.
     # Specific tests will override this to simulate yielding data.

@@ -1,18 +1,18 @@
 # spec/iso/data/importer/parsers/deliverables_parser_spec.rb
 require "spec_helper"
 
-require "iso/data/importer/scrapers/deliverables_scraper"
+require "iso/data/importer/parsers/deliverables_scraper"
 require "iso/data/importer/models/deliverable"
 
 require "fileutils"
 require "httparty"
 
-RSpec.describe Iso::Data::Importer::Scrapers::DeliverablesScraper do
+RSpec.describe Iso::Data::Importer::Parsers::DeliverablesParser do
   let(:scraper) { described_class.new }
 
   let(:source_url) { "https://isopublicstorageprod.blob.core.windows.net/opendata/_latest/iso_deliverables_metadata/json/iso_deliverables_metadata.jsonl" }
   let(:local_filename) { "iso_deliverables_metadata.jsonl" }
-  let(:cache_dir) { Iso::Data::Importer::Scrapers::BaseScraper::TMP_DIR }
+  let(:cache_dir) { Iso::Data::Importer::Parsers::BaseParser::TMP_DIR }
   let(:cache_path) { File.join(cache_dir, local_filename) }
 
   around(:each) do |example|

@@ -21,7 +21,7 @@ module Iso
   module Data
     module Importer
       # Top-level module for accessing ISO data parsers and fetching collections.
-      module Scrapers
+      module Parsers
         # Fetch all ISO deliverables and return them as a DeliverableCollection.
         #
         # @param force_download [Boolean] Whether to force re-downloading source files.
@@ -29,7 +29,7 @@ module Iso
         def self.fetch_deliverables(force_download: false)
           # Using puts for simple logging; a dedicated logger could be integrated later.
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Starting to fetch ISO Deliverables data..."
-          scraper = DeliverablesScraper.new
+          scraper = DeliverablesParser.new
           collection = scraper.download(force_download: force_download)
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Fetched #{collection.size} ISO Deliverables."
           collection
@@ -41,7 +41,7 @@ module Iso
         # @return [Iso::Data::Importer::Models::TechnicalCommitteeCollection] Collection of TechnicalCommittee objects.
         def self.fetch_technical_committees(force_download: false)
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Starting to fetch ISO Technical Committees data..."
-          scraper = TechnicalCommitteesScraper.new
+          scraper = TechnicalCommitteesParser.new
           collection = scraper.download(force_download: force_download)
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Fetched #{collection.size} ISO Technical Committees."
           collection
@@ -53,7 +53,7 @@ module Iso
         # @return [Iso::Data::Importer::Models::IcsEntryCollection] Collection of IcsEntry objects.
         def self.fetch_ics_entries(force_download: false)
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Starting to fetch ISO ICS data..."
-          scraper = IcsScraper.new
+          scraper = IcsParser.new
           collection = scraper.download(force_download: force_download)
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Fetched #{collection.size} ISO ICS entries."
           collection
