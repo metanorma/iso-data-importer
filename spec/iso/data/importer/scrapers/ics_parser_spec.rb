@@ -1,4 +1,4 @@
-# spec/iso/data/importer/parsers/ics_scraper_spec.rb
+# spec/iso/data/importer/parsers/ics_parser_spec.rb
 require "spec_helper"
 
 require "iso/data/importer/scrapers/ics_scraper"

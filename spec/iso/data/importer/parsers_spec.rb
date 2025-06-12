@@ -1,4 +1,4 @@
-# spec/iso/data/importer/scrapers_spec.rb
+# spec/iso/data/importer/parsers_spec.rb
 require "spec_helper"
 
 # Require the main Scrapers module file
@@ -13,9 +13,9 @@ require "iso/data/importer/models/ics_entry"
 require "iso/data/importer/models/ics_entry_collection"
 
 # Require individual scraper classes for stubbing .new
-require "iso/data/importer/scrapers/deliverables_scraper"
-require "iso/data/importer/scrapers/technical_committees_scraper"
-require "iso/data/importer/scrapers/ics_scraper"
+require "iso/data/importer/parsers/deliverables_parser"
+require "iso/data/importer/parsers/technical_committees_parser"
+require "iso/data/importer/parsers/ics_parser"
 
 RSpec.describe Iso::Data::Importer::Scrapers do
   # Create mock item model instances for testing
