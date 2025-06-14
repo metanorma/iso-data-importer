@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "bundler/setup"
-require "revix"
+# require "revix"
 require "xml/c14n"
 
 RSpec.configure do |config|

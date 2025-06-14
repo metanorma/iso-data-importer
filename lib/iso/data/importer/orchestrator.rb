@@ -12,10 +12,10 @@ module Iso
           log("Orchestrator initialized.", :info)
         end
 
-        def run_all(force_download: false, export_format: :yaml)
+        def run_all(force_download: false)
           log("Starting full data import and export run...", :info)
           log("  Force download: #{force_download}", :info)
-          log("  Export format: #{export_format}", :info)
+          log("  Export format: yaml", :info) # Updated log message
 
           begin
             log("Fetching all data collections...", :info)
@@ -28,16 +28,16 @@ module Iso
 
             log("Exporting deliverables...", :info)
             exporter.export_deliverables(data_collections[:deliverables],
-                                         format: export_format)
+                                         format: :yaml) # Hardcode to :yaml
 
             log("Exporting technical committees...", :info)
             exporter.export_technical_committees(
-              data_collections[:technical_committees], format: export_format
+              data_collections[:technical_committees], format: :yaml # Hardcode to :yaml
             )
 
             log("Exporting ICS entries...", :info)
             exporter.export_ics_entries(data_collections[:ics_entries],
-                                        format: export_format)
+                                        format: :yaml) # Hardcode to :yaml
 
             log("Data import and export run completed successfully.", :info)
             true # Indicate success
