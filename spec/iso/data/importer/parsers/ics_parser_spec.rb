@@ -1,7 +1,7 @@
 # spec/iso/data/importer/parsers/ics_parser_spec.rb
 require "spec_helper"
 
-require "iso/data/importer/parsers/ics_scraper"
+require "iso/data/importer/parsers/ics_parser"
 require "iso/data/importer/models/ics_entry"
 
 require "fileutils"
@@ -9,7 +9,7 @@ require "httparty"
 require "csv"
 
 RSpec.describe Iso::Data::Importer::Parsers::IcsParser do
-  let(:scraper) { described_class.new }
+  let(:parser) { described_class.new }
 
   let(:source_url) { Iso::Data::Importer::Parsers::IcsParser::SOURCE_URL }
   let(:local_filename) do
@@ -41,18 +41,18 @@ RSpec.describe Iso::Data::Importer::Parsers::IcsParser do
       before do
         File.write(cache_path,
                    "#{sample_csv_header}\n#{sample_csv_data_row1}\n#{sample_csv_data_row2}")
-        allow(scraper).to receive(:download_file).with(source_url,
-                                                       local_filename, force_download: false).and_return(cache_path)
+        allow(parser).to receive(:download_file).with(source_url,
+                                                      local_filename, force_download: false).and_return(cache_path)
         # Allow the force_download: true variant to call original if used elsewhere, e.g. live tests not included here
-        allow(scraper).to receive(:download_file).with(source_url,
-                                                       local_filename, force_download: true).and_call_original
+        allow(parser).to receive(:download_file).with(source_url,
+                                                      local_filename, force_download: true).and_call_original
       end
 
       it "yields IcsEntry objects" do
         ics_entries_yielded = []
-        allow(scraper).to receive(:log).and_call_original # Allow logs but don't assert specific order here
+        allow(parser).to receive(:log).and_call_original # Allow logs but don't assert specific order here
 
-        scraper.download(force_download: false) do |ics_entry|
+        parser.download(force_download: false) do |ics_entry|
           expect(ics_entry).to be_an_instance_of(Iso::Data::Importer::Models::IcsEntry)
           ics_entries_yielded << ics_entry
         end
@@ -61,8 +61,8 @@ RSpec.describe Iso::Data::Importer::Parsers::IcsParser do
 
       it "correctly populates the first IcsEntry object" do
         first_entry = nil
-        allow(scraper).to receive(:log).and_call_original
-        scraper.download(force_download: false) do |entry|
+        allow(parser).to receive(:log).and_call_original
+        parser.download(force_download: false) do |entry|
           first_entry = entry
           break
         end
@@ -74,8 +74,8 @@ RSpec.describe Iso::Data::Importer::Parsers::IcsParser do
       end
 
       it "returns the correct processed count when completing fully" do
-        allow(scraper).to receive(:log).and_call_original
-        processed_count = scraper.download(force_download: false) # Call without a block
+        allow(parser).to receive(:log).and_call_original
+        processed_count = parser.download(force_download: false) # Call without a block
         expect(processed_count).to eq(2)
       end
     end
@@ -90,16 +90,16 @@ RSpec.describe Iso::Data::Importer::Parsers::IcsParser do
       expect(HTTParty).not_to receive(:get).with(source_url, anything)
 
       # Expect the "Starting..." and "Using cached file..." logs in order.
-      expect(scraper).to receive(:log).with(
+      expect(parser).to receive(:log).with(
         /Starting download for ISO ICS data/i, 0, :info
       ).ordered.and_call_original
-      expect(scraper).to receive(:log).with("Using cached file: #{cache_path}",
-                                            0, :info).ordered.and_call_original
+      expect(parser).to receive(:log).with("Using cached file: #{cache_path}",
+                                           0, :info).ordered.and_call_original
       # Allow any other logs that might occur after these two specific ordered ones.
-      allow(scraper).to receive(:log).with(anything, anything,
-                                           anything).and_call_original
+      allow(parser).to receive(:log).with(anything, anything,
+                                          anything).and_call_original
 
-      scraper.download(force_download: false) { |entry| break if entry }
+      parser.download(force_download: false) { |entry| break if entry }
 
       expect(File.mtime(cache_path).to_i).to eq(original_mtime.to_i)
     end
@@ -110,22 +110,22 @@ RSpec.describe Iso::Data::Importer::Parsers::IcsParser do
         .and_raise(SocketError.new("Simulated CSV download error"))
 
       # Expect this sequence of logs for a download error
-      expect(scraper).to receive(:log).with(
+      expect(parser).to receive(:log).with(
         "Starting download for ISO ICS data...", 0, :info
       ).ordered.and_call_original
-      expect(scraper).to receive(:log).with(
+      expect(parser).to receive(:log).with(
         "Downloading #{local_filename} from #{source_url}...", 0, :info
       ).ordered.and_call_original
-      expect(scraper).to receive(:log).with(
+      expect(parser).to receive(:log).with(
         /Exception downloading #{Regexp.escape(local_filename)}: SocketError - Simulated CSV download error/i, 1, :error
       ).ordered.and_call_original
-      expect(scraper).to receive(:log).with(
+      expect(parser).to receive(:log).with(
         "Failed to download or find ICS data file. Aborting download.", 0, :error
       ).ordered.and_call_original
       # No other logs should be expected in this error path if it aborts correctly.
 
       processed_count = # Call without a block
-        scraper.download(force_download: true) do
+        parser.download(force_download: true) do
         end
       expect(processed_count).to eq(0)
     end
@@ -134,8 +134,8 @@ RSpec.describe Iso::Data::Importer::Parsers::IcsParser do
       before do
         malformed_csv_content = "#{sample_csv_header}\n\"01\",\"P1\",\"T_En1\",\"T_Fr1\",\"S_En1\",\"S_Fr1\"\n\"02\",\"Extra\"Field\",BadLine导致解析失败\n\"03\",\"P3\",\"T_En3\",\"T_Fr3\",\"S_En3\",\"S_Fr3\""
         File.write(cache_path, malformed_csv_content)
-        allow(scraper).to receive(:download_file).with(source_url,
-                                                       local_filename, force_download: false).and_return(cache_path)
+        allow(parser).to receive(:download_file).with(source_url,
+                                                      local_filename, force_download: false).and_return(cache_path)
       end
 
       it "logs the MalformedCSVError and processes items before the error" do
@@ -143,15 +143,15 @@ RSpec.describe Iso::Data::Importer::Parsers::IcsParser do
 
         # Expect the critical "Malformed CSV error" log to occur at least once.
         # We are less concerned about its exact order relative to all other info logs for this test.
-        expect(scraper).to receive(:log).with(
+        expect(parser).to receive(:log).with(
           a_string_matching(/Malformed CSV error in #{local_filename}.*near line 3/i), 1, :error
         ).once.and_call_original
 
         # Allow any other log calls to happen.
-        allow(scraper).to receive(:log).with(anything, anything,
-                                             anything).and_call_original
+        allow(parser).to receive(:log).with(anything, anything,
+                                            anything).and_call_original
 
-        processed_count = scraper.download(force_download: false) do |ics_entry|
+        processed_count = parser.download(force_download: false) do |ics_entry|
           yielded_objects << ics_entry
         end
 
@@ -161,11 +161,11 @@ RSpec.describe Iso::Data::Importer::Parsers::IcsParser do
         expect(yielded_objects.first.identifier).to eq("01")
 
         # Optional: If you still want to check other specific logs occurred, but without strict ordering:
-        # expect(scraper).to have_received(:log).with("Starting download for ISO ICS data...", 0, :info)
-        # expect(scraper).to have_received(:log).with("Processed 1 rows from #{local_filename}", 0, :info)
-        # expect(scraper).to have_received(:log).with("Finished scraping ISO ICS data. Processed 1 items.", 0, :info)
+        # expect(parser).to have_received(:log).with("Starting download for ISO ICS data...", 0, :info)
+        # expect(parser).to have_received(:log).with("Processed 1 rows from #{local_filename}", 0, :info)
+        # expect(parser).to have_received(:log).with("Finished scraping ISO ICS data. Processed 1 items.", 0, :info)
         # Note: `have_received` requires `spy` setup or `and_call_original` on a prior `allow` or `expect`.
-        # The current `allow(scraper).to receive(:log).with(anything, anything, anything).and_call_original`
+        # The current `allow(parser).to receive(:log).with(anything, anything, anything).and_call_original`
         # means we can't use `have_received` directly after the fact without more setup.
         # For simplicity, focusing on the critical error log and functional outcome is often enough.
       end

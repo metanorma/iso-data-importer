@@ -1,14 +1,14 @@
 # spec/iso/data/importer/parsers/technical_committees_parser_spec.rb
 require "spec_helper"
 
-require "iso/data/importer/parsers/technical_committees_scraper"
+require "iso/data/importer/parsers/technical_committees_parser"
 require "iso/data/importer/models/technical_committee"
 
 require "fileutils"
 require "httparty"
 
 RSpec.describe Iso::Data::Importer::Parsers::TechnicalCommitteesParser do
-  let(:scraper) { described_class.new }
+  let(:parser) { described_class.new }
 
   let(:source_url) do
     Iso::Data::Importer::Parsers::TechnicalCommitteesParser::SOURCE_URL
@@ -30,10 +30,10 @@ RSpec.describe Iso::Data::Importer::Parsers::TechnicalCommitteesParser do
     it "downloads the JSONL file, parses it, and yields TechnicalCommittee objects",
        :live do
       committees_yielded = []
-      allow(scraper).to receive(:log).and_call_original
+      allow(parser).to receive(:log).and_call_original
       exception_in_yield_block = nil
 
-      scraper.download(force_download: true) do |committee|
+      parser.download(force_download: true) do |committee|
         expect(committee).to be_an_instance_of(Iso::Data::Importer::Models::TechnicalCommittee)
         if committee.respond_to?(:id) && !committee.id.nil?
           expect(committee.id).to be_a(Integer)
@@ -43,7 +43,7 @@ RSpec.describe Iso::Data::Importer::Parsers::TechnicalCommitteesParser do
       rescue StandardError => e
         exception_in_yield_block = e
         # Optional: Add puts here for debugging if this block is unexpectedly hit
-        # puts "\nDEBUG SPEC (TC Scraper - LIVE YIELD BLOCK): Exception caught: #{e.inspect}"
+        # puts "\nDEBUG SPEC (TC Parser - LIVE YIELD BLOCK): Exception caught: #{e.inspect}"
         break
       end
 
@@ -60,9 +60,9 @@ RSpec.describe Iso::Data::Importer::Parsers::TechnicalCommitteesParser do
 
     it "uses a cached file if force_download is false and the file exists" do
       # 1. Populate cache
-      allow(scraper).to receive(:log).and_call_original # Allow all logs during setup
+      allow(parser).to receive(:log).and_call_original # Allow all logs during setup
       # Ensure download
-      scraper.download(force_download: true) do |model|
+      parser.download(force_download: true) do |model|
         break if model
       end
       expect(File.exist?(cache_path)).to be true
@@ -74,13 +74,13 @@ RSpec.describe Iso::Data::Importer::Parsers::TechnicalCommitteesParser do
       expect(HTTParty).not_to receive(:get).with(source_url, anything)
 
       # Corrected order of log expectations:
-      expect(scraper).to receive(:log).with(/Starting download for ISO Technical Committees/i, 0, :info).ordered # This comes first
-      expect(scraper).to receive(:log).with("Using cached file: #{cache_path}", 0, :info).ordered # Then this from download_file
+      expect(parser).to receive(:log).with(/Starting download for ISO Technical Committees/i, 0, :info).ordered # This comes first
+      expect(parser).to receive(:log).with("Using cached file: #{cache_path}", 0, :info).ordered # Then this from download_file
       # Allow other subsequent logs (like Parsed items, Finished scraping) to pass without strict order after these two.
-      allow(scraper).to receive(:log).with(anything, anything,
-                                           anything).and_call_original
+      allow(parser).to receive(:log).with(anything, anything,
+                                          anything).and_call_original
 
-      scraper.download(force_download: false) { |model| break if model }
+      parser.download(force_download: false) { |model| break if model }
 
       expect(File.mtime(cache_path).to_i).to eq(original_mtime.to_i)
       expect(File.size(cache_path)).to eq(original_size)
@@ -91,21 +91,21 @@ RSpec.describe Iso::Data::Importer::Parsers::TechnicalCommitteesParser do
         .with(source_url, hash_including(stream_body: true))
         .and_raise(Timeout::Error.new("Simulated Timeout::Error from RSpec"))
 
-      expect(scraper).to receive(:log).with(
+      expect(parser).to receive(:log).with(
         "Starting download for ISO Technical Committees...", 0, :info
       ).ordered
-      expect(scraper).to receive(:log).with(
+      expect(parser).to receive(:log).with(
         "Downloading #{local_filename} from #{source_url}...", 0, :info
       ).ordered
-      expect(scraper).to receive(:log).with(
+      expect(parser).to receive(:log).with(
         /Exception downloading #{Regexp.escape(local_filename)}: Timeout::Error - Simulated Timeout::Error/i, 1, :error
       ).ordered
-      expect(scraper).to receive(:log).with(
+      expect(parser).to receive(:log).with(
         "Failed to download or find technical committees file. Aborting download.", 0, :error
       ).ordered
 
       processed_count = # Yielded block not strictly necessary for this test
-        scraper.download(force_download: true) do
+        parser.download(force_download: true) do
         end
       expect(processed_count).to eq(0)
     end
@@ -119,26 +119,26 @@ RSpec.describe Iso::Data::Importer::Parsers::TechnicalCommitteesParser do
       it "skips the malformed line, logs a warning, and processes valid lines" do
         yielded_objects = []
 
-        expect(scraper).to receive(:log).with(
+        expect(parser).to receive(:log).with(
           "Starting download for ISO Technical Committees...", 0, :info
         ).ordered
-        expect(scraper).to receive(:log).with(
+        expect(parser).to receive(:log).with(
           "Using cached file: #{cache_path}", 0, :info
         ).ordered
-        expect(scraper).to receive(:log).with(
+        expect(parser).to receive(:log).with(
           /Skipping invalid JSON line 2.*this_is_not_json/i, 1, :warn
         ).ordered
-        expect(scraper).to receive(:log).with(
+        expect(parser).to receive(:log).with(
           a_string_matching(/Error: unexpected token at 'this_is_not_json(\n)?'/i), 2, :warn
         ).ordered
-        expect(scraper).to receive(:log).with(
+        expect(parser).to receive(:log).with(
           "Parsed 2 items from #{local_filename}", 0, :info
         ).ordered
-        expect(scraper).to receive(:log).with(
+        expect(parser).to receive(:log).with(
           "Finished scraping ISO Technical Committees. Processed 2 items.", 0, :info
         ).ordered
 
-        processed_count = scraper.download(force_download: false) do |committee|
+        processed_count = parser.download(force_download: false) do |committee|
           yielded_objects << committee
         end
 

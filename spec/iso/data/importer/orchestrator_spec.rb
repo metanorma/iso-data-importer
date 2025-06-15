@@ -52,10 +52,10 @@ RSpec.describe Iso::Data::Importer::Orchestrator do
 
   describe "#run_all" do
     context "with default options (force_download: false, export_format: :yaml)" do
-      it "calls Scrapers.fetch_all with force_download: false" do
+      it "calls Parsers.fetch_all with force_download: false" do
         expect(Iso::Data::Importer::Parsers).to receive(:fetch_all)
-                                                   .with(force_download: false)
-                                                   .and_return(mock_fetched_data)
+          .with(force_download: false)
+          .and_return(mock_fetched_data)
         orchestrator.run_all
       end
 
@@ -68,11 +68,11 @@ RSpec.describe Iso::Data::Importer::Orchestrator do
 
       it "calls export methods on the exporter with fetched data and default format :yaml" do
         expect(mock_exporter_instance).to receive(:export_deliverables)
-                                            .with(mock_deliverables_collection, format: :yaml)
+          .with(mock_deliverables_collection, format: :yaml)
         expect(mock_exporter_instance).to receive(:export_technical_committees)
-                                            .with(mock_tc_collection, format: :yaml)
+          .with(mock_tc_collection, format: :yaml)
         expect(mock_exporter_instance).to receive(:export_ics_entries)
-                                            .with(mock_ics_collection, format: :yaml)
+          .with(mock_ics_collection, format: :yaml)
         orchestrator.run_all
       end
 
@@ -86,10 +86,10 @@ RSpec.describe Iso::Data::Importer::Orchestrator do
     end
 
     context "with specified options" do
-      it "passes force_download: true to Scrapers.fetch_all" do
+      it "passes force_download: true to Parsers.fetch_all" do
         expect(Iso::Data::Importer::Parsers).to receive(:fetch_all)
-                                                   .with(force_download: true)
-                                                   .and_return(mock_fetched_data)
+          .with(force_download: true)
+          .and_return(mock_fetched_data)
         orchestrator.run_all(force_download: true)
       end
 
@@ -97,21 +97,21 @@ RSpec.describe Iso::Data::Importer::Orchestrator do
         # We are primarily testing that the format option is passed.
         # The actual logging of "Export format: json" is an implementation detail.
         expect(mock_exporter_instance).to receive(:export_deliverables)
-                                            .with(mock_deliverables_collection, format: :json)
+          .with(mock_deliverables_collection, format: :json)
         expect(mock_exporter_instance).to receive(:export_technical_committees)
-                                            .with(mock_tc_collection, format: :json)
+          .with(mock_tc_collection, format: :json)
         expect(mock_exporter_instance).to receive(:export_ics_entries)
-                                            .with(mock_ics_collection, format: :json)
+          .with(mock_ics_collection, format: :json)
         orchestrator.run_all(export_format: :json)
       end
     end
 
-    context "when Scrapers.fetch_all raises an error" do
+    context "when Parsers.fetch_all raises an error" do
       let(:fetch_error) { StandardError.new("Simulated fetch error") }
       before do
         allow(Iso::Data::Importer::Parsers).to receive(:fetch_all)
-                                                  .with(force_download: false)
-                                                  .and_raise(fetch_error)
+          .with(force_download: false)
+          .and_raise(fetch_error)
       end
 
       it "logs a fatal error message containing the error details" do
