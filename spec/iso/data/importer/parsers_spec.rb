@@ -1,7 +1,7 @@
 # spec/iso/data/importer/parsers_spec.rb
 require "spec_helper"
 
-# Require the main Scrapers module file
+# Require the main Parsers module file
 require "iso/data/importer/parsers"
 
 # Require all model classes (items and collections)
@@ -12,7 +12,7 @@ require "iso/data/importer/models/technical_committee_collection"
 require "iso/data/importer/models/ics_entry"
 require "iso/data/importer/models/ics_entry_collection"
 
-# Require individual scraper classes for stubbing .new
+# Require individual parser classes for stubbing .new
 require "iso/data/importer/parsers/deliverables_parser"
 require "iso/data/importer/parsers/technical_committees_parser"
 require "iso/data/importer/parsers/ics_parser"
@@ -39,33 +39,33 @@ RSpec.describe Iso::Data::Importer::Parsers do
   end
 
   # Mock instances of the individual parsers
-  let(:deliverables_scraper_instance) do
+  let(:deliverables_parser_instance) do
     instance_double(Iso::Data::Importer::Parsers::DeliverablesParser)
   end
-  let(:tc_scraper_instance) do
+  let(:tc_parser_instance) do
     instance_double(Iso::Data::Importer::Parsers::TechnicalCommitteesParser)
   end
-  let(:ics_scraper_instance) do
+  let(:ics_parser_instance) do
     instance_double(Iso::Data::Importer::Parsers::IcsParser)
   end
 
   before do
-    # Stub the .new method for each scraper class to return our mock instances
-    allow(Iso::Data::Importer::Parsers::DeliverablesParser).to receive(:new).and_return(deliverables_scraper_instance)
-    allow(Iso::Data::Importer::Parsers::TechnicalCommitteesParser).to receive(:new).and_return(tc_scraper_instance)
-    allow(Iso::Data::Importer::Parsers::IcsParser).to receive(:new).and_return(ics_scraper_instance)
+    # Stub the .new method for each parser class to return our mock instances
+    allow(Iso::Data::Importer::Parsers::DeliverablesParser).to receive(:new).and_return(deliverables_parser_instance)
+    allow(Iso::Data::Importer::Parsers::TechnicalCommitteesParser).to receive(:new).and_return(tc_parser_instance)
+    allow(Iso::Data::Importer::Parsers::IcsParser).to receive(:new).and_return(ics_parser_instance)
 
     # Default stub for download methods: yield nothing, return count 0.
     # Specific tests will override this to simulate yielding data.
-    allow(deliverables_scraper_instance).to receive(:download).and_return(0)
-    allow(tc_scraper_instance).to receive(:download).and_return(0)
-    allow(ics_scraper_instance).to receive(:download).and_return(0)
+    allow(deliverables_parser_instance).to receive(:download).and_return(0)
+    allow(tc_parser_instance).to receive(:download).and_return(0)
+    allow(ics_parser_instance).to receive(:download).and_return(0)
   end
 
   describe ".fetch_deliverables" do
-    it "instantiates DeliverablesScraper, calls its download method, and returns a DeliverableCollection" do
-      # Configure the mock scraper to yield our mock deliverables
-      expect(deliverables_scraper_instance).to receive(:download) do |&block_param|
+    it "instantiates DeliverablesParser, calls its download method, and returns a DeliverableCollection" do
+      # Configure the mock parser to yield our mock deliverables
+      expect(deliverables_parser_instance).to receive(:download) do |&block_param|
         block_param.call(mock_deliverable1)
         block_param.call(mock_deliverable2)
         2 # Simulate download returning the count of processed items
@@ -80,8 +80,8 @@ RSpec.describe Iso::Data::Importer::Parsers do
                                                           mock_deliverable2)
     end
 
-    it "passes force_download: true to the scraper" do
-      expect(deliverables_scraper_instance).to receive(:download)
+    it "passes force_download: true to the parser" do
+      expect(deliverables_parser_instance).to receive(:download)
         .with(force_download: true)
         .and_return(0) # Return value for download method
       described_class.fetch_deliverables(force_download: true)
@@ -89,8 +89,8 @@ RSpec.describe Iso::Data::Importer::Parsers do
   end
 
   describe ".fetch_technical_committees" do
-    it "instantiates TechnicalCommitteesScraper, calls its download method, and returns a TechnicalCommitteeCollection" do
-      expect(tc_scraper_instance).to receive(:download) do |&block_param|
+    it "instantiates TechnicalCommitteesParser, calls its download method, and returns a TechnicalCommitteeCollection" do
+      expect(tc_parser_instance).to receive(:download) do |&block_param|
         block_param.call(mock_tc1)
         1
       end.with(force_download: false)
@@ -101,8 +101,8 @@ RSpec.describe Iso::Data::Importer::Parsers do
       expect(collection.map(&:itself)).to contain_exactly(mock_tc1)
     end
 
-    it "passes force_download: true to the scraper" do
-      expect(tc_scraper_instance).to receive(:download)
+    it "passes force_download: true to the parser" do
+      expect(tc_parser_instance).to receive(:download)
         .with(force_download: true)
         .and_return(0)
       described_class.fetch_technical_committees(force_download: true)
@@ -110,8 +110,8 @@ RSpec.describe Iso::Data::Importer::Parsers do
   end
 
   describe ".fetch_ics_entries" do
-    it "instantiates IcsScraper, calls its download method, and returns an IcsEntryCollection" do
-      expect(ics_scraper_instance).to receive(:download) do |&block_param|
+    it "instantiates IcsParser, calls its download method, and returns an IcsEntryCollection" do
+      expect(ics_parser_instance).to receive(:download) do |&block_param|
         block_param.call(mock_ics1)
         block_param.call(mock_ics2)
         2
@@ -123,8 +123,8 @@ RSpec.describe Iso::Data::Importer::Parsers do
       expect(collection.map(&:itself)).to contain_exactly(mock_ics1, mock_ics2)
     end
 
-    it "passes force_download: true to the scraper" do
-      expect(ics_scraper_instance).to receive(:download)
+    it "passes force_download: true to the parser" do
+      expect(ics_parser_instance).to receive(:download)
         .with(force_download: true)
         .and_return(0)
       described_class.fetch_ics_entries(force_download: true)

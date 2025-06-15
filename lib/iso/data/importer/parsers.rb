@@ -1,7 +1,7 @@
 # lib/iso/data/importer/parsers.rb
 # frozen_string_literal: true
 
-# Require individual scraper classes
+# Require individual parser classes
 require_relative "parsers/deliverables_parser"
 require_relative "parsers/technical_committees_parser"
 require_relative "parsers/ics_parser"
@@ -29,8 +29,8 @@ module Iso
         def self.fetch_deliverables(force_download: false)
           # Using puts for simple logging; a dedicated logger could be integrated later.
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Starting to fetch ISO Deliverables data..."
-          scraper = DeliverablesParser.new
-          collection = scraper.download(force_download: force_download)
+          parser = DeliverablesParser.new
+          collection = parser.download(force_download: force_download)
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Fetched #{collection.size} ISO Deliverables."
           collection
         end
@@ -41,8 +41,8 @@ module Iso
         # @return [Iso::Data::Importer::Models::TechnicalCommitteeCollection] Collection of TechnicalCommittee objects.
         def self.fetch_technical_committees(force_download: false)
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Starting to fetch ISO Technical Committees data..."
-          scraper = TechnicalCommitteesParser.new
-          collection = scraper.download(force_download: force_download)
+          parser = TechnicalCommitteesParser.new
+          collection = parser.download(force_download: force_download)
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Fetched #{collection.size} ISO Technical Committees."
           collection
         end
@@ -53,8 +53,8 @@ module Iso
         # @return [Iso::Data::Importer::Models::IcsEntryCollection] Collection of IcsEntry objects.
         def self.fetch_ics_entries(force_download: false)
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Starting to fetch ISO ICS data..."
-          scraper = IcsParser.new
-          collection = scraper.download(force_download: force_download)
+          parser = IcsParser.new
+          collection = parser.download(force_download: force_download)
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} INFO:  Fetched #{collection.size} ISO ICS entries."
           collection
         end
