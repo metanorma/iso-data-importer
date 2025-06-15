@@ -20,7 +20,7 @@ namespace :data do
     force_download_arg = args[:force_download]
     export_format_arg = args[:export_format]
 
-    force_download = (force_download_arg == 'true' || force_download_arg == 't')
+    force_download = ["true", "t"].include?(force_download_arg)
     export_format = export_format_arg&.to_sym || :yaml # Default to :yaml if not provided
 
     puts "  Force Download: #{force_download}"
@@ -29,7 +29,6 @@ namespace :data do
     orchestrator = Iso::Data::Importer::Orchestrator.new
     success = orchestrator.run_all(
       force_download: force_download,
-      export_format: export_format
     )
 
     if success
@@ -55,15 +54,15 @@ namespace :data do
     cache_dir = Iso::Data::Importer::Parsers::BaseParser::TMP_DIR
     if Dir.exist?(cache_dir)
       puts "=> Cleaning cache directory: #{cache_dir}..."
-      -# FileUtils.rm_rf(cache_dir) # This would remove the 'tmp/iso_data_cache' dir itself
-      -# To remove only contents:
+      # FileUtils.rm_rf(cache_dir) # This would remove the 'tmp/iso_data_cache' dir itself
+      # To remove only contents:
       Dir.foreach(cache_dir) do |f|
         fn = File.join(cache_dir, f)
-        FileUtils.rm_rf(fn) if f != '.' && f != '..' # Avoid deleting . and ..
+        FileUtils.rm_rf(fn) if f != "." && f != ".." # Avoid deleting . and ..
       end
-      -# Or more simply if you want to remove everything inside:
-      -# FileUtils.remove_dir(cache_dir, true) # true to force remove non-empty
-      -# FileUtils.mkdir_p(cache_dir)          # then recreate it
+      # Or more simply if you want to remove everything inside:
+      # FileUtils.remove_dir(cache_dir, true) # true to force remove non-empty
+      # FileUtils.mkdir_p(cache_dir)          # then recreate it
       puts "=> Cache directory cleaned."
     else
       puts "=> Cache directory #{cache_dir} does not exist. Nothing to clean."
@@ -71,7 +70,7 @@ namespace :data do
   end
 
   desc "Clean both output data and cached files"
-  task clean: [:clean_output, :clean_cache] do
+  task clean: %i[clean_output clean_cache] do
     puts "=> All clean tasks completed."
   end
 end

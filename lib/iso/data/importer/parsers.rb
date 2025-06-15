@@ -15,7 +15,6 @@ require_relative "models/ics_entry_collection"
 # though parsers already require them.
 require_relative "models/deliverable"
 require_relative "models/technical_committee"
-require_relative "models/ics_entry"
 
 module Iso
   module Data

@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require_relative "base_parser"
-require_relative "../models/ics_entry"
+require_relative "../models/ics_entry_collection"
 
 module Iso
   module Data
