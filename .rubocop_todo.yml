@@ -22,15 +22,15 @@ Layout/ArgumentAlignment:
     - 'lib/iso/data/importer/cli.rb'
     - 'lib/iso/data/importer/exporter.rb'
     - 'lib/iso/data/importer/orchestrator.rb'
-    - 'lib/iso/data/importer/scrapers/base_scraper.rb'
-    - 'lib/iso/data/importer/scrapers/ics_scraper.rb'
+    - 'lib/iso/data/importer/parsers/base_parser.rb'
+    - 'lib/iso/data/importer/parsers/ics_parser.rb'
     - 'spec/iso/data/importer/exporter_spec.rb'
     - 'spec/iso/data/importer/models/technical_committee_spec.rb'
     - 'spec/iso/data/importer/orchestrator_spec.rb'
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/ics_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/ics_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers_spec.rb'
 
 # Offense count: 3
 # This cop supports safe autocorrection (--autocorrect).
@@ -39,8 +39,8 @@ Layout/ArgumentAlignment:
 Layout/ArrayAlignment:
   Exclude:
     - 'lib/iso/data/importer/exporter.rb'
-    - 'lib/iso/data/importer/scrapers/base_scraper.rb'
-    - 'spec/iso/data/importer/scrapers_spec.rb'
+    - 'lib/iso/data/importer/parsers/base_parser.rb'
+    - 'spec/iso/data/importer/parsers_spec.rb'
 
 # Offense count: 4
 # This cop supports safe autocorrection (--autocorrect).
@@ -48,8 +48,8 @@ Layout/ArrayAlignment:
 Layout/AssignmentIndentation:
   Exclude:
     - 'spec/iso/data/importer/models/technical_committee_spec.rb'
-    - 'spec/iso/data/importer/scrapers/ics_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
+    - 'spec/iso/data/importer/parsers/ics_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
 
 # Offense count: 81
 # This cop supports safe autocorrection (--autocorrect).
@@ -62,10 +62,10 @@ Layout/BlockAlignment:
     - 'spec/iso/data/importer/models/ics_entry_spec.rb'
     - 'spec/iso/data/importer/models/technical_committee_spec.rb'
     - 'spec/iso/data/importer/orchestrator_spec.rb'
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/ics_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/ics_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers_spec.rb'
 
 # Offense count: 66
 # This cop supports safe autocorrection (--autocorrect).
@@ -76,10 +76,10 @@ Layout/BlockEndNewline:
     - 'spec/iso/data/importer/models/ics_entry_spec.rb'
     - 'spec/iso/data/importer/models/technical_committee_spec.rb'
     - 'spec/iso/data/importer/orchestrator_spec.rb'
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/ics_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/ics_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers_spec.rb'
 
 # Offense count: 44
 # This cop supports safe autocorrection (--autocorrect).
@@ -87,14 +87,14 @@ Layout/ClosingParenthesisIndentation:
   Exclude:
     - 'lib/iso/data/importer/exporter.rb'
     - 'lib/iso/data/importer/orchestrator.rb'
-    - 'lib/iso/data/importer/scrapers/deliverables_scraper.rb'
-    - 'lib/iso/data/importer/scrapers/ics_scraper.rb'
-    - 'lib/iso/data/importer/scrapers/technical_committees_scraper.rb'
+    - 'lib/iso/data/importer/parsers/deliverables_parser.rb'
+    - 'lib/iso/data/importer/parsers/ics_parser.rb'
+    - 'lib/iso/data/importer/parsers/technical_committees_parser.rb'
     - 'spec/iso/data/importer/models/technical_committee_spec.rb'
     - 'spec/iso/data/importer/orchestrator_spec.rb'
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/ics_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/ics_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
 
 # Offense count: 17
 # This cop supports safe autocorrection (--autocorrect).
@@ -104,8 +104,8 @@ Layout/CommentIndentation:
     - 'spec/iso/data/importer/exporter_spec.rb'
     - 'spec/iso/data/importer/models/deliverable_spec.rb'
     - 'spec/iso/data/importer/models/technical_committee_spec.rb'
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
 
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
@@ -126,8 +126,8 @@ Layout/EmptyLineAfterGuardClause:
 # SupportedStyles: empty_lines, no_empty_lines
 Layout/EmptyLinesAroundBlockBody:
   Exclude:
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
 
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
@@ -151,7 +151,7 @@ Layout/EndAlignment:
 Layout/ExtraSpacing:
   Exclude:
     - 'lib/iso/data/importer/orchestrator.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
 
 # Offense count: 44
 # This cop supports safe autocorrection (--autocorrect).
@@ -161,14 +161,14 @@ Layout/FirstArgumentIndentation:
   Exclude:
     - 'lib/iso/data/importer/exporter.rb'
     - 'lib/iso/data/importer/orchestrator.rb'
-    - 'lib/iso/data/importer/scrapers/deliverables_scraper.rb'
-    - 'lib/iso/data/importer/scrapers/ics_scraper.rb'
-    - 'lib/iso/data/importer/scrapers/technical_committees_scraper.rb'
+    - 'lib/iso/data/importer/parsers/deliverables_parser.rb'
+    - 'lib/iso/data/importer/parsers/ics_parser.rb'
+    - 'lib/iso/data/importer/parsers/technical_committees_parser.rb'
     - 'spec/iso/data/importer/models/technical_committee_spec.rb'
     - 'spec/iso/data/importer/orchestrator_spec.rb'
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/ics_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/ics_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
 
 # Offense count: 2
 # This cop supports safe autocorrection (--autocorrect).
@@ -179,7 +179,7 @@ Layout/FirstArgumentIndentation:
 Layout/HashAlignment:
   Exclude:
     - 'lib/iso/data/importer/models/ics_entry_collection.rb'
-    - 'lib/iso/data/importer/scrapers/base_scraper.rb'
+    - 'lib/iso/data/importer/parsers/base_parser.rb'
 
 # Offense count: 74
 # This cop supports safe autocorrection (--autocorrect).
@@ -191,9 +191,9 @@ Layout/IndentationConsistency:
     - 'spec/iso/data/importer/exporter_spec.rb'
     - 'spec/iso/data/importer/models/deliverable_spec.rb'
     - 'spec/iso/data/importer/models/technical_committee_spec.rb'
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/ics_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/ics_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
 
 # Offense count: 146
 # This cop supports safe autocorrection (--autocorrect).
@@ -206,10 +206,10 @@ Layout/IndentationWidth:
     - 'spec/iso/data/importer/models/ics_entry_spec.rb'
     - 'spec/iso/data/importer/models/technical_committee_spec.rb'
     - 'spec/iso/data/importer/orchestrator_spec.rb'
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/ics_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/ics_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers_spec.rb'
 
 # Offense count: 422
 # This cop supports safe autocorrection (--autocorrect).
@@ -232,14 +232,14 @@ Layout/MultilineMethodCallBraceLayout:
   Exclude:
     - 'lib/iso/data/importer/exporter.rb'
     - 'lib/iso/data/importer/orchestrator.rb'
-    - 'lib/iso/data/importer/scrapers/deliverables_scraper.rb'
-    - 'lib/iso/data/importer/scrapers/ics_scraper.rb'
-    - 'lib/iso/data/importer/scrapers/technical_committees_scraper.rb'
+    - 'lib/iso/data/importer/parsers/deliverables_parser.rb'
+    - 'lib/iso/data/importer/parsers/ics_parser.rb'
+    - 'lib/iso/data/importer/parsers/technical_committees_parser.rb'
     - 'spec/iso/data/importer/models/technical_committee_spec.rb'
     - 'spec/iso/data/importer/orchestrator_spec.rb'
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/ics_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/ics_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
 
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
@@ -253,8 +253,8 @@ Layout/MultilineMethodCallIndentation:
 # This cop supports safe autocorrection (--autocorrect).
 Layout/RescueEnsureAlignment:
   Exclude:
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
 
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
@@ -279,10 +279,10 @@ Layout/TrailingEmptyLines:
     - 'spec/iso/data/importer/models/deliverable_spec.rb'
     - 'spec/iso/data/importer/models/technical_committee_spec.rb'
     - 'spec/iso/data/importer/orchestrator_spec.rb'
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/ics_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/ics_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers_spec.rb'
 
 # Offense count: 57
 # This cop supports safe autocorrection (--autocorrect).
@@ -293,23 +293,23 @@ Layout/TrailingWhitespace:
     - 'lib/iso/data/importer/exporter.rb'
     - 'lib/iso/data/importer/models/ics_entry_collection.rb'
     - 'lib/iso/data/importer/orchestrator.rb'
-    - 'lib/iso/data/importer/scrapers/base_scraper.rb'
-    - 'lib/iso/data/importer/scrapers/ics_scraper.rb'
+    - 'lib/iso/data/importer/parsers/base_parser.rb'
+    - 'lib/iso/data/importer/parsers/ics_parser.rb'
     - 'spec/iso/data/importer/exporter_spec.rb'
     - 'spec/iso/data/importer/models/technical_committee_spec.rb'
     - 'spec/iso/data/importer/orchestrator_spec.rb'
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/ics_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/ics_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers_spec.rb'
 
 # Offense count: 3
 # Configuration parameters: AllowComments, AllowEmptyLambdas.
 Lint/EmptyBlock:
   Exclude:
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/ics_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/ics_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
 
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
@@ -320,15 +320,15 @@ Lint/ScriptPermission:
 # Offense count: 1
 Lint/ShadowedException:
   Exclude:
-    - 'lib/iso/data/importer/scrapers/base_scraper.rb'
+    - 'lib/iso/data/importer/parsers/base_parser.rb'
 
 # Offense count: 2
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: AutoCorrect.
 Lint/UselessAssignment:
   Exclude:
-    - 'lib/iso/data/importer/scrapers/ics_scraper.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
+    - 'lib/iso/data/importer/parsers/ics_parser.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
 
 # Offense count: 5
 # Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes, Max.
@@ -337,7 +337,7 @@ Metrics/AbcSize:
     - 'lib/iso/data/importer/cli.rb'
     - 'lib/iso/data/importer/exporter.rb'
     - 'lib/iso/data/importer/orchestrator.rb'
-    - 'lib/iso/data/importer/scrapers/base_scraper.rb'
+    - 'lib/iso/data/importer/parsers/base_parser.rb'
 
 # Offense count: 3
 # Configuration parameters: AllowedMethods, AllowedPatterns, Max.
@@ -345,7 +345,7 @@ Metrics/CyclomaticComplexity:
   Exclude:
     - 'lib/iso/data/importer/cli.rb'
     - 'lib/iso/data/importer/exporter.rb'
-    - 'lib/iso/data/importer/scrapers/base_scraper.rb'
+    - 'lib/iso/data/importer/parsers/base_parser.rb'
 
 # Offense count: 9
 # Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
@@ -378,10 +378,10 @@ Style/BlockDelimiters:
     - 'spec/iso/data/importer/models/ics_entry_spec.rb'
     - 'spec/iso/data/importer/models/technical_committee_spec.rb'
     - 'spec/iso/data/importer/orchestrator_spec.rb'
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/ics_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/ics_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers_spec.rb'
 
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
@@ -389,7 +389,7 @@ Style/BlockDelimiters:
 # SupportedStyles: empty, nil, both
 Style/EmptyElse:
   Exclude:
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
 
 # Offense count: 1
 # This cop supports unsafe autocorrection (--autocorrect-all).
@@ -407,7 +407,7 @@ Style/IdenticalConditionalBranches:
 # This cop supports safe autocorrection (--autocorrect).
 Style/MultilineIfModifier:
   Exclude:
-    - 'lib/iso/data/importer/scrapers/base_scraper.rb'
+    - 'lib/iso/data/importer/parsers/base_parser.rb'
 
 # Offense count: 2
 # This cop supports unsafe autocorrection (--autocorrect-all).
@@ -417,21 +417,21 @@ Style/NumericPredicate:
   Exclude:
     - 'spec/**/*'
     - 'lib/iso/data/importer/exporter.rb'
-    - 'lib/iso/data/importer/scrapers/base_scraper.rb'
+    - 'lib/iso/data/importer/parsers/base_parser.rb'
 
 # Offense count: 4
 # This cop supports safe autocorrection (--autocorrect).
 Style/RedundantBegin:
   Exclude:
-    - 'spec/iso/data/importer/scrapers/deliverables_scraper_spec.rb'
-    - 'spec/iso/data/importer/scrapers/technical_committees_scraper_spec.rb'
+    - 'spec/iso/data/importer/parsers/deliverables_parser_spec.rb'
+    - 'spec/iso/data/importer/parsers/technical_committees_parser_spec.rb'
 
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: AllowAsExpressionSeparator.
 Style/Semicolon:
   Exclude:
-    - 'spec/iso/data/importer/scrapers/ics_scraper_spec.rb'
+    - 'spec/iso/data/importer/parsers/ics_parser_spec.rb'
 
 # Offense count: 2
 # This cop supports safe autocorrection (--autocorrect).
@@ -461,9 +461,9 @@ Style/TrailingCommaInArguments:
   Exclude:
     - 'lib/iso/data/importer/cli.rb'
     - 'lib/iso/data/importer/exporter.rb'
-    - 'lib/iso/data/importer/scrapers/deliverables_scraper.rb'
-    - 'lib/iso/data/importer/scrapers/ics_scraper.rb'
-    - 'lib/iso/data/importer/scrapers/technical_committees_scraper.rb'
+    - 'lib/iso/data/importer/parsers/deliverables_parser.rb'
+    - 'lib/iso/data/importer/parsers/ics_parser.rb'
+    - 'lib/iso/data/importer/parsers/technical_committees_parser.rb'
 
 # Offense count: 4
 # This cop supports safe autocorrection (--autocorrect).
@@ -471,7 +471,7 @@ Style/TrailingCommaInArguments:
 # SupportedStylesForMultiline: comma, consistent_comma, diff_comma, no_comma
 Style/TrailingCommaInHashLiteral:
   Exclude:
-    - 'lib/iso/data/importer/scrapers.rb'
+    - 'lib/iso/data/importer/parsers.rb'
     - 'spec/iso/data/importer/models/ics_entry_spec.rb'
     - 'spec/iso/data/importer/orchestrator_spec.rb'
 

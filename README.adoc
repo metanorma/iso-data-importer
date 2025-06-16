@@ -145,7 +145,7 @@ Use the gem programmatically in your Ruby code:
 require 'iso/data/importer'
 
 # Fetch all data types
-data = Iso::Data::Importer::Scrapers.fetch_all(force_download: true)
+data = Iso::Data::Importer::Parsers.fetch_all(force_download: true)
 
 # Access individual collections
 deliverables = data[:deliverables]
@@ -153,9 +153,9 @@ committees = data[:technical_committees]
 ics_entries = data[:ics_entries]
 
 # Fetch specific data types
-deliverables = Iso::Data::Importer::Scrapers.fetch_deliverables
-committees = Iso::Data::Importer::Scrapers.fetch_technical_committees
-ics = Iso::Data::Importer::Scrapers.fetch_ics_entries
+deliverables = Iso::Data::Importer::Parsers.fetch_deliverables
+committees = Iso::Data::Importer::Parsers.fetch_technical_committees
+ics = Iso::Data::Importer::Parsers.fetch_ics_entries
 
 # Export data
 exporter = Iso::Data::Importer::Exporter.new
@@ -175,46 +175,46 @@ The gem follows a modular architecture with clear separation of concerns:
 
 [source]
 ----
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   CLI/Rake      │───▶│   Orchestrator   │───▶│   Scrapers      │
-│   Interface     │    │                  │    │   Module        │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                                                         │
-                       ┌─────────────────────────────────┼─────────────────────────────────┐
-                       │                                 │                                 │
-                       ▼                                 ▼                                 ▼
-            ┌─────────────────┐              ┌─────────────────┐              ┌─────────────────┐
-            │ Deliverables    │              │ Technical       │              │ ICS             │
-            │ Scraper         │              │ Committees      │              │ Scraper         │
-            │                 │              │ Scraper         │              │                 │
-            └─────────────────┘              └─────────────────┘              └─────────────────┘
-                       │                                 │                                 │
-                       ▼                                 ▼                                 ▼
-            ┌─────────────────┐              ┌─────────────────┐              ┌─────────────────┐
-            │ Deliverable     │              │ Technical       │              │ ICS Entry       │
-            │ Collection      │              │ Committee       │              │ Collection      │
-            │                 │              │ Collection      │              │                 │
-            └─────────────────┘              └─────────────────┘              └─────────────────┘
-                       │                                 │                                 │
-                       └─────────────────────────────────┼─────────────────────────────────┘
-                                                         │
-                                                         ▼
-                                              ┌─────────────────┐
-                                              │   Exporter      │
-                                              │                 │
-                                              └─────────────────┘
-                                                         │
-                                                         ▼
-                                              ┌─────────────────┐
-                                              │ YAML/JSON Files │
-                                              │ (data/ dir)     │
-                                              └─────────────────┘
+┌─────────────────┐    ┌──────────────────┐    ┌──────────────┐
+│   CLI/Rake      │───▶│   Orchestrator   │───▶│   Parsers    │
+│   Interface     │    │                  │    │   Module     │
+└─────────────────┘    └──────────────────┘    └──────┬───────┘
+                                                      │
+                       ┌──────────────────────┬───────┴─────────┐
+                       │                      │                 │
+                       ▼                      ▼                 ▼
+               ┌──────────────┐    ┌───────────────┐    ┌─────────────┐
+               │ Deliverables │    │ Technical     │    │ ICS         │
+               │ Parser       │    │ Committees    │    │ Parser      │
+               │              │    │ Parser        │    │             │
+               └───────┬──────┘    └───────┬───────┘    └───────┬─────┘
+                       │                   │                    │
+                       ▼                   ▼                    ▼
+               ┌──────────────┐    ┌───────────────┐    ┌─────────────┐
+               │ Deliverable  │    │ Technical     │    │ ICS Entry   │
+               │ Collection   │    │ Committee     │    │ Collection  │
+               │              │    │ Collection    │    │             │
+               └───────┬──────┘    └───────┬───────┘    └───────┬─────┘
+                       │                   │                    │
+                       └───────────────────┼────────────────────┘
+                                           │
+                                           ▼
+                                  ┌─────────────────┐
+                                  │   Exporter      │
+                                  │                 │
+                                  └────────┬────────┘
+                                           │
+                                           ▼
+                                  ┌─────────────────┐
+                                  │ YAML Files      │
+                                  │ (data/ dir)     │
+                                  └─────────────────┘
 ----
 
 === Data flow
 
 . **Input**: CLI commands or Rake tasks trigger the orchestrator
-. **Download**: Scrapers fetch data from ISO Open Data URLs using HTTParty
+. **Download**: Parsers fetch data from ISO Open Data URLs using HTTParty
 . **Cache**: Files are cached locally in `tmp/iso_data_cache/`
 . **Parse**: LutaML models deserialize JSONL and XML data
 . **Export**: Structured data is serialized to YAML/JSON in `data/` directory
@@ -223,7 +223,7 @@ The gem follows a modular architecture with clear separation of concerns:
 
 * **CLI**: Thor-based command-line interface
 * **Orchestrator**: Coordinates the entire workflow
-* **Scrapers**: Download and parse data from ISO Open Data
+* **Parsers**: Download and parse data from ISO Open Data
 * **Models**: LutaML-based data models with serialization support
 * **Exporter**: Outputs structured data to files
 
