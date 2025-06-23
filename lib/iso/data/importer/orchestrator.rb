@@ -27,17 +27,14 @@ module Iso
             exporter.clean_output_files # Uses Exporter's default cleaning (collection files)
 
             log("Exporting deliverables...", :info)
-            exporter.export_deliverables(data_collections[:deliverables],
-                                         format: :yaml) # Hardcode to :yaml
+            exporter.export_deliverables(data_collections[:deliverables])
 
             log("Exporting technical committees...", :info)
             exporter.export_technical_committees(
-              data_collections[:technical_committees], format: :yaml # Hardcode to :yaml
-            )
+              data_collections[:technical_committees])
 
             log("Exporting ICS entries...", :info)
-            exporter.export_ics_entries(data_collections[:ics_entries],
-                                        format: :yaml) # Hardcode to :yaml
+            exporter.export_ics_entries(data_collections[:ics_entries].to_a)
 
             log("Data import and export run completed successfully.", :info)
             true # Indicate success

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "bundler/setup"
-# require "revix"
+require "iso/data/importer"
 require "xml/c14n"
 
 RSpec.configure do |config|
