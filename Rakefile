@@ -59,7 +59,7 @@ namespace :data do
         FileUtils.rm_rf(fn) if f != "." && f != ".." # Avoid deleting . and ..
       end
       # Or more simply if you want to remove everything inside:
-      # FileUtils.remove_dir(cache_dir, true) # true to force remove non-empty
+      # FileUtils.remove_dir(cache_dir, true) # true to force to remove non-empty
       # FileUtils.mkdir_p(cache_dir)          # then recreate it
       puts "=> Cache directory cleaned."
     else

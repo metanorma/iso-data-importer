@@ -14,7 +14,7 @@ module Iso
     module Importer
       class Exporter
         # Changed to point to a directory that will be a sibling to the iso-data-importer checkout in GHA
-        DATA_OUTPUT_DIR = "../iso-data-open"
+        DATA_OUTPUT_DIR = "./iso-data-open"
 
         # Base filenames for collection-level export
         ALL_DELIVERABLES_FILENAME_BASE = "deliverables"
