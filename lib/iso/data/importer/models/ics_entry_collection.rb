@@ -7,38 +7,36 @@ module Iso
   module Data
     module Importer
       module Models
+        # --- MODELS WITH ADDED YAML/JSON SERIALIZATION RULES ---
+
         class LocaleString < Lutaml::Model::Serializable
           attribute :value, :string
           attribute :lang, :string
           xml do
-            # namespace 'http://www.w3.org/XML/1998/namespace'
             map_attribute "lang", to: :lang,
-                                  namespace: "http://www.w3.org/XML/1998/namespace", prefix: "xml"
+                          namespace: "http://www.w3.org/XML/1998/namespace", prefix: "xml"
             map_content to: :value
+          end
+          key_value do
+            map "value", to: :value
+            map "lang", to: :lang
           end
         end
 
-        # <field>
-        #   <identifier>01</identifier>
-        #   <title xml:lang="en">Generalities. Terminology. Standardization. Documentation</title>
-        #   <title xml:lang="fr">Généralités. Terminologie. Normalisation. Documentation</title>
-        # </field>
         class IcsField < Lutaml::Model::Serializable
           attribute :identifier, :string
           attribute :title, LocaleString, collection: true
-
           xml do
             root "field"
             map_element "identifier", to: :identifier
             map_element "title", to: :title
           end
+          key_value do
+            map "identifier", to: :identifier
+            map "title", to: :title
+          end
         end
 
-        # <reference>
-        #   <identifier>01.080.30</identifier>
-        #   <note xml:lang="en">Graphical symbols for use on technical drawings</note>
-        #   <note xml:lang="fr">Symboles graphiques destinés aux dessins techniques</note>
-        # </reference>
         class IcsReference < Lutaml::Model::Serializable
           attribute :identifier, :string
           attribute :note, LocaleString, collection: true
@@ -46,6 +44,10 @@ module Iso
             root "reference"
             map_element "identifier", to: :identifier
             map_element "note", to: :note
+          end
+          key_value do
+            map "identifier", to: :identifier
+            map "note", to: :note
           end
         end
 
@@ -55,33 +57,17 @@ module Iso
             root "references"
             map_element "reference", to: :references
           end
+          key_value do
+            map_instances to: :references
+          end
         end
 
-        # <group>
-        #   <identifier>01.100</identifier>
-        #   <field>01</field>
-        #   <title xml:lang="en">Technical drawings</title>
-        #   <title xml:lang="fr">Dessins techniques</title>
-        #   <references>
-        #     <reference>
-        #       <identifier>01.080.30</identifier>
-        #       <note xml:lang="en">Graphical symbols for use on technical drawings</note>
-        #       <note xml:lang="fr">Symboles graphiques destinés aux dessins techniques</note>
-        #     </reference>
-        #     <reference>
-        #       <identifier>35.240.10</identifier>
-        #       <note xml:lang="en">Computer-aided design</note>
-        #       <note xml:lang="fr">Dessin assisté par ordinateur</note>
-        #     </reference>
-        #   </references>
-        # </group>
         class IcsGroup < Lutaml::Model::Serializable
           attribute :identifier, :string
           attribute :field, :string
           attribute :title, LocaleString, collection: true
           attribute :scope, LocaleString, collection: true
           attribute :references, IcsReferenceCollection
-
           xml do
             root "group"
             map_element "identifier", to: :identifier
@@ -90,28 +76,14 @@ module Iso
             map_element "scope", to: :scope
             map_element "references", to: :references
           end
+          key_value do
+            map "identifier", to: :identifier
+            map "field", to: :field
+            map "title", to: :title
+            map "scope", to: :scope
+            map "references", to: :references
+          end
         end
-
-        # <subGroup>
-        #   <identifier>03.080.20</identifier>
-        #   <group>03.080</group>
-        #   <title xml:lang="en">Services for companies</title>
-        #   <title xml:lang="fr">Services aux entreprises</title>
-        #   <scope xml:lang="en">Including publicity, advertising, professional services, recruitment services, management consultancy, outsourcing, etc.</scope>
-        #   <scope xml:lang="fr">Y compris publicité, communication, services professionnels, services de recrutement, conseil en gestion, sous-traitance, etc.</scope>
-        #   <references>
-        #     <reference>
-        #       <identifier>03.100.01</identifier>
-        #       <note xml:lang="en">Outsourcing as part of a company organization</note>
-        #       <note xml:lang="fr">Sous-traitance du point de vue de l'organisation d'une entreprise</note>
-        #     </reference>
-        #     <reference>
-        #       <identifier>03.100.30</identifier>
-        #       <note xml:lang="en">Staff training and staff certification</note>
-        #       <note xml:lang="fr">Formation et certification du personnel</note>
-        #     </reference>
-        #   </references>
-        # </subGroup>
 
         class IcsSubGroup < Lutaml::Model::Serializable
           attribute :identifier, :string
@@ -119,7 +91,6 @@ module Iso
           attribute :title, LocaleString, collection: true
           attribute :scope, LocaleString, collection: true
           attribute :references, IcsReferenceCollection
-
           xml do
             root "subGroup"
             map_element "identifier", to: :identifier
@@ -128,38 +99,63 @@ module Iso
             map_element "scope", to: :scope
             map_element "references", to: :references
           end
+          key_value do
+            map "identifier", to: :identifier
+            map "group", to: :group
+            map "title", to: :title
+            map "scope", to: :scope
+            map "references", to: :references
+          end
         end
 
+        # This class correctly PARSES the complex, heterogeneous XML file.
+        # It remains unchanged from our previous fix.
         class IcsEntryCollection < Lutaml::Model::Serializable
           include Enumerable
           attribute :fields, IcsField, collection: true
           attribute :groups, IcsGroup, collection: true
           attribute :sub_groups, IcsSubGroup, collection: true
 
-          # --- START OF THE FIX ---
-
-          # Make this object enumerable by providing an `each` method that yields
-          # all of its constituent items.
           def each(&block)
             (fields + groups + sub_groups).each(&block)
           end
 
-          # Define what `size` means for this collection: the total number of entries.
-          # The `&.` (safe navigation operator) prevents errors if any collection is nil.
           def size
             (fields&.size || 0) + (groups&.size || 0) + (sub_groups&.size || 0)
           end
 
-          # --- END OF THE FIX ---
-          #
           xml do
             root "fields"
-
             map_element "field", to: :fields
             map_element "group", to: :groups
             map_element "subGroup", to: :sub_groups
           end
         end
+
+        # --- NEW SERIALIZER WRAPPER CLASS ---
+
+        # This is a special-purpose class whose ONLY job is to correctly
+        # serialize the flat array of ICS entries into a clean YAML list.
+        # It acts as a "smart" wrapper around a plain array.
+        class IcsYamlCollection < Lutaml::Model::Serializable
+          # This attribute holds the flat array of mixed ICS entry types.
+          # `polymorphic: true` is important because the array contains different
+          # classes (IcsField, IcsGroup, IcsSubGroup).
+          attribute :entries, Lutaml::Model::Serializable, collection: true,
+                    polymorphic: true
+
+          key_value do
+            # This tells LutaML to NOT wrap the output in an "entries:" key.
+            # This ensures the YAML output is a root-level list.
+            no_root
+
+            # This tells LutaML to serialize the contents of the `entries`
+            # attribute as a flat list, using the `key_value` blocks
+            # defined in each of the individual item classes.
+            map_instances to: :entries
+          end
+        end
+
       end
     end
   end
