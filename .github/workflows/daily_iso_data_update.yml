@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write # To commit, tag, and push in iso-data-importer
-      # packages: write # If publishing to GitHub Packages in the future
 
     steps:
       - name: Checkout iso-data-importer (this repo)
@@ -26,9 +25,7 @@ jobs:
         with:
           repository: metanorma/iso-data-open
           path: iso-data-open # Checkout into a sibling subdirectory
-          # Use a PAT with write access to metanorma/iso-data-open
-          # This PAT will be used for pushing changes to iso-data-open
-          token: ${{ secrets.GH_PAT_ISO_DATA_OPEN }} # IMPORTANT: Create this secret
+          token: ${{ secrets.GH_PAT_ISO_DATA_OPEN }} # PAT with write access to metanorma/iso-data-open
 
       - name: Configure Git User for iso-data-importer
         working-directory: ./iso-data-importer
@@ -43,18 +40,29 @@ jobs:
           bundler-cache: true
           working-directory: ./iso-data-importer # Ensure bundle cache is for this project
 
-      - name: Run Rake task to update data into iso-data-open
-        working-directory: ./iso-data-importer # Run rake from the importer's directory
+      - name: Run Rake task to update data locally
+        working-directory: ./iso-data-importer
         run: |
           echo "Updating ISO data using Rake..."
-          # force_download=true, export_format=yaml (for committed data)
-          # Data will be output to ../iso-data-open relative to this working directory
+          # This will generate files in ./iso-data-importer/data/
           bundle exec rake "data:update_all[true,yaml]"
           echo "Data update task finished."
 
+      # --- FIX: START OF THE ADDED STEP ---
+      - name: Move updated data to iso-data-open
+        run: |
+          echo "Syncing generated data to the iso-data-open repository..."
+          # This command copies all content from the source to the destination.
+          # -a: archive mode (preserves permissions, etc.)
+          # -v: verbose output
+          # --delete: removes files from the destination that are no longer in the source
+          # The trailing slashes are important: it means "copy the CONTENTS of data/ into iso-data-open/"
+          rsync -av --delete ./iso-data-importer/data/ ./iso-data-open/
+      # --- FIX: END OF THE ADDED STEP ---
+
       - name: Check for changes, Commit and Push to iso-data-open
         id: commit_iso_data_open
-        working-directory: ./iso-data-open # Operate within the iso-data-open checkout
+        working-directory: ./iso-data-open
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -70,8 +78,8 @@ jobs:
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
-      # Steps for iso-data-importer (this repo) release, conditional on changes in iso-data-open
-      - name: Bump version, Tag, Commit Version, and Push Tags/Commits to iso-data-importer
+      # The rest of the workflow remains the same, as its logic was correct.
+      - name: Bump version, Tag, Commit Version, and Push to iso-data-importer
         if: steps.commit_iso_data_open.outputs.has_changes == 'true'
         working-directory: ./iso-data-importer
         run: |
@@ -89,4 +97,4 @@ jobs:
           echo "Publishing iso-data-importer to RubyGems.org..."
           gem build *.gemspec
           gem push *.gem
-          echo "Published iso-data-importer to RubyGems.org."
+          echo "Published to RubyGems.org."
