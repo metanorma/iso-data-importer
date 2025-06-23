@@ -1,14 +1,16 @@
-name: Daily ISO Data Update & Release
+name: TEST - Daily ISO Data Update & Release
 
+# This workflow will run on any push to the 'test-workflow' branch,
+# or when triggered manually via the Actions tab.
 on:
-  schedule:
-    # Runs daily at 02:00 UTC (adjust as needed)
-    - cron: "0 2 * * *"
-  workflow_dispatch: # Allows manual triggering
+  push:
+    branches:
+      - test-workflow
+  workflow_dispatch:
 
 jobs:
   update_data_and_release:
-    name: Check ISO Data, Update, and Release if Changed
+    name: TEST - Check ISO Data, Update, and Release if Changed
     runs-on: ubuntu-latest
     permissions:
       contents: write # To commit, tag, and push in iso-data-importer
@@ -17,15 +19,16 @@ jobs:
       - name: Checkout iso-data-importer (this repo)
         uses: actions/checkout@v4
         with:
-          path: iso-data-importer # Checkout into a subdirectory
-          fetch-depth: 0 # Fetches all history and tags
+          repository: H3xano/iso-data-importer # Using your fork of the importer
+          path: iso-data-importer             # Checkout into a subdirectory
+          fetch-depth: 0                      # Fetches all history and tags
 
       - name: Checkout iso-data-open repository
         uses: actions/checkout@v4
         with:
-          repository: metanorma/iso-data-open
-          path: iso-data-open # Checkout into a sibling subdirectory
-          token: ${{ secrets.GH_PAT_ISO_DATA_OPEN }} # PAT with write access to metanorma/iso-data-open
+          repository: H3xano/iso-data-open         # Using your fork of the data repo
+          path: iso-data-open                      # Checkout into a sibling subdirectory
+          token: ${{ secrets.GH_PAT_ISO_DATA_OPEN }} # Your PAT to push to your data repo fork
 
       - name: Configure Git User for iso-data-importer
         working-directory: ./iso-data-importer
@@ -40,29 +43,18 @@ jobs:
           bundler-cache: true
           working-directory: ./iso-data-importer # Ensure bundle cache is for this project
 
-      - name: Run Rake task to update data locally
+      - name: Run Rake task to update data directly into iso-data-open
         working-directory: ./iso-data-importer
         run: |
           echo "Updating ISO data using Rake..."
-          # This will generate files in ./iso-data-importer/data/
+          # The Exporter is configured to output directly to ../iso-data-open
+          # so no move/rsync step is needed.
           bundle exec rake "data:update_all[true,yaml]"
           echo "Data update task finished."
 
-      # --- FIX: START OF THE ADDED STEP ---
-      - name: Move updated data to iso-data-open
-        run: |
-          echo "Syncing generated data to the iso-data-open repository..."
-          # This command copies all content from the source to the destination.
-          # -a: archive mode (preserves permissions, etc.)
-          # -v: verbose output
-          # --delete: removes files from the destination that are no longer in the source
-          # The trailing slashes are important: it means "copy the CONTENTS of data/ into iso-data-open/"
-          rsync -av --delete ./iso-data-importer/data/ ./iso-data-open/
-      # --- FIX: END OF THE ADDED STEP ---
-
       - name: Check for changes, Commit and Push to iso-data-open
         id: commit_iso_data_open
-        working-directory: ./iso-data-open
+        working-directory: ./iso-data-open # Operate within the iso-data-open checkout
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -72,29 +64,28 @@ jobs:
           else
             echo "iso-data-open has changes."
             git add .
-            git commit -m "Update ISO open data files - $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
-            echo "Pushing data changes to metanorma/iso-data-open..."
+            git commit -m "TEST: Update ISO open data files - $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+            echo "Pushing data changes to H3xano/iso-data-open..."
             git push
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
-      # The rest of the workflow remains the same, as its logic was correct.
-      - name: Bump version, Tag, Commit Version, and Push to iso-data-importer
+      - name: Bump version, Tag, and Commit in iso-data-importer
         if: steps.commit_iso_data_open.outputs.has_changes == 'true'
         working-directory: ./iso-data-importer
         run: |
           echo "Data changed in iso-data-open, proceeding with version bump for iso-data-importer..."
           # The GITHUB_TOKEN for this repo (iso-data-importer) is used here implicitly
+          # --no-push is used in the gem bump command to prevent pushing to the main repo
           bundle exec gem bump --version patch --tag --commit --push
           echo "Version bumped, tagged, and pushed for iso-data-importer."
 
-      - name: Publish iso-data-importer to RubyGems.org
-        if: steps.commit_iso_data_open.outputs.has_changes == 'true'
+      - name: DISABLED - Publish to RubyGems.org
+        if: false # This step is permanently disabled for the test
         working-directory: ./iso-data-importer
         env:
           RUBYGEMS_API_KEY: ${{ secrets.METANORMA_CI_RUBYGEMS_API_KEY }}
         run: |
-          echo "Publishing iso-data-importer to RubyGems.org..."
-          gem build *.gemspec
-          gem push *.gem
-          echo "Published to RubyGems.org."
+          echo "This step is disabled. In a real run, it would publish to RubyGems.org."
+          # gem build *.gemspec
+          # gem push *.gem
