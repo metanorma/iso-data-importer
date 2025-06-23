@@ -13,19 +13,20 @@ module Iso
   module Data
     module Importer
       class Exporter
-        # Changed to point to a directory that will be a sibling to the iso-data-importer checkout in GHA
-        DATA_OUTPUT_DIR = "./iso-data-open"
-
         # Base filenames for collection-level export
         ALL_DELIVERABLES_FILENAME_BASE = "deliverables"
         ALL_TCS_FILENAME_BASE = "committees"
         ALL_ICS_FILENAME_BASE = "ics"
 
-        def initialize
-          log(
-            "Initializing Exporter and ensuring base output directory exists...", :info
-          )
-          ensure_output_directory(DATA_OUTPUT_DIR)
+        # The output directory path is now stored in an instance variable
+        attr_reader :output_dir
+
+        # The constructor now accepts the output directory path.
+        # It defaults to a local "data" directory for development convenience.
+        def initialize(output_dir: "data")
+          @output_dir = output_dir
+          log("Initializing Exporter. Output directory: '#{@output_dir}'", :info)
+          ensure_output_directory(@output_dir)
         end
 
         def ensure_output_directory(dir_path)
@@ -34,47 +35,43 @@ module Iso
 
         # Clears the collection output files (only .yaml).
         def clean_output_files
-          log("Cleaning collection YAML output files from #{DATA_OUTPUT_DIR}...",
-              :info)
-          base_filenames = [ALL_DELIVERABLES_FILENAME_BASE,
-                            ALL_TCS_FILENAME_BASE, ALL_ICS_FILENAME_BASE]
+          log("Cleaning collection YAML output files from '#{@output_dir}'...", :info)
+          base_filenames = [
+            ALL_DELIVERABLES_FILENAME_BASE,
+            ALL_TCS_FILENAME_BASE,
+            ALL_ICS_FILENAME_BASE,
+          ]
           extensions = [".yaml"] # Only YAML
 
           base_filenames.each do |base_name|
             extensions.each do |ext|
-              filepath_to_remove = File.join(self.class::DATA_OUTPUT_DIR,
-                                             "#{base_name}#{ext}")
-              FileUtils.rm_f(filepath_to_remove)
+              # Use the instance variable for the path
+              filepath_to_remove = File.join(@output_dir, "#{base_name}#{ext}")
+              FileUtils.rm_f(filepath_to_remove) if File.exist?(filepath_to_remove)
             end
           end
           log("Collection YAML output files cleaned.", :info)
         end
 
         # Generic export method for a whole collection to a single YAML file
-        def export_collection_to_single_file(collection, base_filename,
-data_type_name)
-          # Check if a collection is nil or empty using respond_to? for safety with doubles in tests
-          if collection.nil? || (collection.respond_to?(:empty?) && collection.empty?) || (collection.respond_to?(:size) && collection.empty?)
+        def export_collection_to_single_file(collection, base_filename, data_type_name)
+          if collection.nil? || (collection.respond_to?(:empty?) && collection.empty?)
             log("No #{data_type_name} to export.", :info)
             return
           end
 
-          # Ensure a collection responds to size for logging, if not already checked
           collection_size = collection.respond_to?(:size) ? collection.size : "unknown number of"
 
           file_extension = ".yaml"
-          filepath = File.join(self.class::DATA_OUTPUT_DIR,
-                               "#{base_filename}#{file_extension}")
+          # Use the instance variable for the path
+          filepath = File.join(@output_dir, "#{base_filename}#{file_extension}")
 
-          log("Exporting #{collection_size} #{data_type_name} to single file: #{filepath} (format: yaml)...",
-              :info)
+          log("Exporting #{collection_size} #{data_type_name} to single file: #{filepath} (format: yaml)...", :info)
 
           output_string = serialize_collection(collection)
           File.write(filepath, output_string)
 
-          log(
-            "#{data_type_name} export (collection file) complete to #{filepath}", :info
-          )
+          log("#{data_type_name} export (collection file) complete to #{filepath}", :info)
         end
 
         def export_deliverables(deliverable_collection)
@@ -82,7 +79,7 @@ data_type_name)
             deliverable_collection,
             ALL_DELIVERABLES_FILENAME_BASE,
             "Deliverables",
-          )
+            )
         end
 
         def export_technical_committees(tc_collection)
@@ -90,7 +87,7 @@ data_type_name)
             tc_collection,
             ALL_TCS_FILENAME_BASE,
             "Technical Committees",
-          )
+            )
         end
 
         def export_ics_entries(ics_collection)
@@ -98,7 +95,7 @@ data_type_name)
             ics_collection,
             ALL_ICS_FILENAME_BASE,
             "ICS Entries",
-          )
+            )
         end
 
         private
@@ -113,7 +110,7 @@ data_type_name)
                    when :warn  then "WARN:  "
                    else "INFO:  "
                    end
-          puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} #{prefix}#{message}"
+          puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} Exporter #{prefix}#{message}"
         end
       end
     end
