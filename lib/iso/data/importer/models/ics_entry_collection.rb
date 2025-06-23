@@ -131,10 +131,27 @@ module Iso
         end
 
         class IcsEntryCollection < Lutaml::Model::Serializable
+          include Enumerable
           attribute :fields, IcsField, collection: true
           attribute :groups, IcsGroup, collection: true
           attribute :sub_groups, IcsSubGroup, collection: true
 
+          # --- START OF THE FIX ---
+
+          # Make this object enumerable by providing an `each` method that yields
+          # all of its constituent items.
+          def each(&block)
+            (fields + groups + sub_groups).each(&block)
+          end
+
+          # Define what `size` means for this collection: the total number of entries.
+          # The `&.` (safe navigation operator) prevents errors if any collection is nil.
+          def size
+            (fields&.size || 0) + (groups&.size || 0) + (sub_groups&.size || 0)
+          end
+
+          # --- END OF THE FIX ---
+          #
           xml do
             root "fields"
 

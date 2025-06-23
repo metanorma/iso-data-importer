@@ -1,14 +1,12 @@
-# Rakefile
-require "bundler/setup" # Ensures all gems from Gemfile are available
 
-# Require the main entry point or the classes needed for the tasks
-# If you have a main lib file like `lib/iso-data-importer.rb` that loads everything:
-# require "iso-data-importer"
-# Otherwise, require the specific classes needed by the tasks:
-require_relative "lib/iso/data/importer/orchestrator"
-require_relative "lib/iso/data/importer/exporter"
-require_relative "lib/iso/data/importer/parsers/base_parser" # For BaseParser::TMP_DIR
-require "fileutils" # For FileUtils in clean tasks
+# Rakefile
+require "bundler/setup"
+
+# This one line loads your main gem file, which in turn loads everything
+# else, INCLUDING the crucial LutaML configuration block.
+require_relative "lib/iso/data/importer"
+
+require "fileutils" # Keep this one for the clean tasks
 
 namespace :data do
   desc "Fetch all ISO data, process, and export. Accepts force_download and export_format. " \
