@@ -53,13 +53,13 @@ module Iso
         # Generic export method for a whole collection to a single YAML file
         def export_collection_to_single_file(collection, base_filename,
 data_type_name)
-          # Check if collection is nil or empty using respond_to? for safety with doubles in tests
+          # Check if a collection is nil or empty using respond_to? for safety with doubles in tests
           if collection.nil? || (collection.respond_to?(:empty?) && collection.empty?) || (collection.respond_to?(:size) && collection.empty?)
             log("No #{data_type_name} to export.", :info)
             return
           end
 
-          # Ensure collection responds to size for logging, if not already checked
+          # Ensure a collection responds to size for logging, if not already checked
           collection_size = collection.respond_to?(:size) ? collection.size : "unknown number of"
 
           file_extension = ".yaml"
@@ -73,7 +73,7 @@ data_type_name)
           File.write(filepath, output_string)
 
           log(
-            "#{data_type_name} export (collection file, yaml) complete to #{filepath}", :info
+            "#{data_type_name} export (collection file) complete to #{filepath}", :info
           )
         end
 

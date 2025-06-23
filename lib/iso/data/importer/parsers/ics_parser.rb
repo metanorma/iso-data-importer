@@ -28,13 +28,14 @@ module Iso
               return
             end
 
-            Models::IcsEntryCollection.from_xml(downloaded_file_path)
+            file_content = File.read(downloaded_file_path)
+            Models::IcsEntryCollection.from_xml(file_content)
           rescue StandardError => e
             log(
-              "Critical error during CSV processing for ICS data: #{e.message}", 0, :error
+              "Critical error during XML processing for ICS data: #{e.message}", 0, :error
             )
             log(
-              "Backtrace (CSV processing):\n#{e.backtrace.take(5).join("\n")}", 1, :error
+              "Backtrace (XML processing):\n#{e.backtrace.take(5).join("\n")}", 1, :error
             )
           end
         end

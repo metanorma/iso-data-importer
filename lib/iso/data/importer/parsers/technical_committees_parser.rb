@@ -27,7 +27,8 @@ module Iso
               return
             end
 
-            Models::TechnicalCommitteeCollection.from_jsonl(downloaded_file_path)
+            file_content = File.read(downloaded_file_path)
+            Models::TechnicalCommitteeCollection.from_jsonl(file_content)
           rescue StandardError => e # For critical errors from each_jsonl_item itself (e.g., file IO)
             log(
               "Critical error during JSONL processing for technical committees: #{e.message}", 0, :error
