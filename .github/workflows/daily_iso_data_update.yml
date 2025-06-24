@@ -17,14 +17,12 @@ jobs:
       - name: Checkout iso-data-importer (this repo)
         uses: actions/checkout@v4
         with:
-          # Check out this repo into a subdirectory named 'importer'
           path: importer
 
       - name: Checkout iso-data-open repository
         uses: actions/checkout@v4
         with:
           repository: H3xano/iso-data-open
-          # Check out the data repo into a sibling directory named 'data'
           path: data
           token: ${{ secrets.GH_PAT_ISO_DATA_OPEN }}
 
@@ -38,36 +36,39 @@ jobs:
         with:
           ruby-version: '3.1'
           bundler-cache: true
-          # Point bundler to the correct Gemfile location
           working-directory: ./importer
 
       - name: Run Rake task to update data
-        # Run the Rake task from inside the importer's directory
         working-directory: ./importer
         run: |
           echo "Updating ISO data using Rake..."
-          # Use an absolute path to the output directory to remove all ambiguity.
-          # `${{ github.workspace }}` resolves to the root of the checkout.
           OUTPUT_PATH="${{ github.workspace }}/data"
           echo "Outputting data to: $OUTPUT_PATH"
           bundle exec rake "data:update_all[true,yaml,$OUTPUT_PATH]"
           echo "Data update task finished."
 
-      - name: Debug - Verify files were created
-        run: |
-          echo "--- Verifying contents of the data repository checkout ---"
-          ls -la ${{ github.workspace }}/data
-
+      # This is the most important step for debugging.
       - name: Check for changes, Commit and Push to iso-data-open
         id: commit_iso_data_open
-        # Run this step from inside the data repo's checkout
-        working-directory: ./data
+        working-directory: ./data # We are inside the data repository
         run: |
+          echo "--- DEBUGGING GIT STATUS ---"
+          echo "Current directory: $(pwd)"
+          
+          echo "Listing files:"
+          ls -la
+          
+          echo "Git status:"
+          git status
+          
+          echo "--- END DEBUGGING ---"
+
+          # Now, run the original logic
           if git diff --quiet HEAD; then
-            echo "iso-data-open has no changes."
+            echo "iso-data-open has no changes. The 'if' condition was true."
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
-            echo "iso-data-open has changes."
+            echo "iso-data-open has changes. The 'if' condition was false."
             git add .
             git commit -m "TEST: Update ISO open data files - $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
             echo "Pushing data changes to H3xano/iso-data-open..."
@@ -75,13 +76,13 @@ jobs:
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
+      # The rest of the workflow remains the same
       - name: Bump version, Tag, and Commit in iso-data-importer
         if: steps.commit_iso_data_open.outputs.has_changes == 'true'
         working-directory: ./importer
         run: |
-          echo "Data changed in iso-data-open, proceeding with version bump for iso-data-importer..."
+          echo "Data changed, proceeding with version bump..."
           bundle exec gem bump --version patch --tag --commit --push
-          echo "Version bumped, tagged, and pushed for iso-data-importer."
 
       - name: DISABLED - Publish to RubyGems.org
         if: false
