@@ -1,34 +1,30 @@
-name: TEST - Daily ISO Data Update & Release
+name: Daily ISO Data Update
 
 on:
-  push:
-    branches:
-      - test-workflow
-  workflow_dispatch:
+  schedule:
+    # Runs daily at 02:00 UTC
+    - cron: "0 2 * * *"
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
-  update_data_and_release:
-    name: TEST - Check ISO Data, Update, and Release if Changed
+  update_data:
+    name: Check for New ISO Data and Update
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # To commit/tag/push to the importer repo
+    # No extra permissions needed, as this job only pushes to the other repo
 
     steps:
       - name: Checkout iso-data-importer (this repo)
         uses: actions/checkout@v4
         with:
-          # Check out this repo into a subdirectory named 'importer'
           path: importer
-          # You need a token here to push the version bump back
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout iso-data-open repository
         uses: actions/checkout@v4
         with:
+          # IMPORTANT: For the final PR, change this back to metanorma/iso-data-open
           repository: H3xano/iso-data-open
-          # Check out the data repo into a sibling directory named 'data'
           path: data
-          # Use your PAT to push commits to the data repository
+          # The PAT needs write access to the data repository
           token: ${{ secrets.GH_PAT_ISO_DATA_OPEN }}
 
       - name: Configure Git User
@@ -41,51 +37,26 @@ jobs:
         with:
           ruby-version: '3.1'
           bundler-cache: true
-          # Point bundler to the correct Gemfile location
           working-directory: ./importer
 
       - name: Run Rake task to update data
         working-directory: ./importer
         run: |
           echo "Updating ISO data using Rake..."
-          # Use an absolute path to the output directory to remove all ambiguity.
           OUTPUT_PATH="${{ github.workspace }}/data"
-          echo "Outputting data to: $OUTPUT_PATH"
           bundle exec rake "data:update_all[true,yaml,$OUTPUT_PATH]"
           echo "Data update task finished."
 
-      - name: Check for changes, Commit and Push to iso-data-open
-        id: commit_iso_data_open
-        working-directory: ./data # We are inside the data repository
+      - name: Commit and Push Data Changes
+        working-directory: ./data
         run: |
-          # Use `git status --porcelain` to check for ALL changes, including new (untracked) files.
-          # If its output is empty, there are no changes.
+          # Check for any changes, including new files
           if [ -z "$(git status --porcelain)" ]; then
-            echo "iso-data-open has no changes."
-            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No new data found. No changes to commit."
           else
-            echo "iso-data-open has changes."
-            # Add all new and changed files
+            echo "New data found. Committing changes..."
             git add .
-            git commit -m "TEST: Update ISO open data files - $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
-            echo "Pushing data changes to H3xano/iso-data-open..."
+            git commit -m "chore: Update ISO open data files"
             git push
-            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Data changes have been pushed."
           fi
-
-      - name: Bump version, Tag, and Push to iso-data-importer
-        if: steps.commit_iso_data_open.outputs.has_changes == 'true'
-        working-directory: ./importer
-        run: |
-          echo "Data changed, proceeding with version bump for iso-data-importer..."
-          # This push will now work because of the token in the importer checkout step
-          bundle exec gem bump --version patch --tag --commit --push
-          echo "Version bumped, tagged, and pushed."
-
-      - name: DISABLED - Publish to RubyGems
-        if: false
-        working-directory: ./importer
-        env:
-          RUBYGEMS_API_KEY: ${{ secrets.METANORMA_CI_RUBYGEMS_API_KEY }}
-        run: |
-          echo "This step is disabled."
