@@ -25,7 +25,8 @@ module Iso
         # It defaults to a local "data" directory for development convenience.
         def initialize(output_dir: "data")
           @output_dir = output_dir
-          log("Initializing Exporter. Output directory: '#{@output_dir}'", :info)
+          # Use a slightly different log message to confirm the new code is running
+          log("Exporter Initialized. Outputting to: '#{@output_dir}'", :info)
           ensure_output_directory(@output_dir)
         end
 
@@ -110,6 +111,7 @@ module Iso
                    when :warn  then "WARN:  "
                    else "INFO:  "
                    end
+          # Added Exporter prefix to log messages for clarity
           puts "#{Time.now.strftime('%Y-%m-%d %H:%M:%S')} Exporter #{prefix}#{message}"
         end
       end
