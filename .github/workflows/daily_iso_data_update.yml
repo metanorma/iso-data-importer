@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           # IMPORTANT: For the final PR, change this back to metanorma/iso-data-open
-          repository: H3xano/iso-data-open
+          repository: metanorma/iso-data-open
           path: data
           # The PAT needs write access to the data repository
           token: ${{ secrets.GH_PAT_ISO_DATA_OPEN }}
