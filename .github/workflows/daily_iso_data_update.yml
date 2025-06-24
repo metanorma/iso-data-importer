@@ -43,14 +43,28 @@ jobs:
           bundler-cache: true
           working-directory: ./iso-data-importer # Ensure bundle cache is for this project
 
-      - name: Run Rake task to update data directly into iso-data-open
+      - name: Run Rake task to update data into iso-data-open
         working-directory: ./iso-data-importer
         run: |
           echo "Updating ISO data using Rake..."
-          # The Exporter is configured to output directly to ../iso-data-open
-          # so no move/rsync step is needed.
-          bundle exec rake "data:update_all[true,yaml]"
+          bundle exec rake "data:update_all[true,yaml,../iso-data-open]"
           echo "Data update task finished."
+
+      # --- START OF NEW DEBUGGING STEP ---
+      - name: Debug - List Directories and Files
+        run: |
+          echo "--- Current Directory ---"
+          pwd
+          
+          echo "--- Full Workspace Listing (Recursive) ---"
+          ls -laR .
+          
+          echo "--- Contents of the TARGET directory (iso-data-open) ---"
+          ls -la ./iso-data-open
+          
+          echo "--- Contents of the LIKELY WRONG directory (iso-data-importer/iso-data-open) ---"
+          ls -la ./iso-data-importer/iso-data-open || echo "Directory does not exist, which is good."
+      # --- END OF NEW DEBUGGING STEP ---
 
       - name: Check for changes, Commit and Push to iso-data-open
         id: commit_iso_data_open
