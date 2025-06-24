@@ -82,7 +82,7 @@ jobs:
           bundle exec gem bump --version patch --tag --commit --push
           echo "Version bumped, tagged, and pushed."
 
-      - name: DISABLED - Publish to RubyGems.org
+      - name: DISABLED - Publish to RubyGems
         if: false
         working-directory: ./importer
         env:
