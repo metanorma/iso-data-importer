@@ -11,19 +11,24 @@ jobs:
     name: TEST - Check ISO Data, Update, and Release if Changed
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # To commit/tag/push to the importer repo
 
     steps:
       - name: Checkout iso-data-importer (this repo)
         uses: actions/checkout@v4
         with:
+          # Check out this repo into a subdirectory named 'importer'
           path: importer
+          # You need a token here to push the version bump back
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout iso-data-open repository
         uses: actions/checkout@v4
         with:
           repository: H3xano/iso-data-open
+          # Check out the data repo into a sibling directory named 'data'
           path: data
+          # Use your PAT to push commits to the data repository
           token: ${{ secrets.GH_PAT_ISO_DATA_OPEN }}
 
       - name: Configure Git User
@@ -36,39 +41,31 @@ jobs:
         with:
           ruby-version: '3.1'
           bundler-cache: true
+          # Point bundler to the correct Gemfile location
           working-directory: ./importer
 
       - name: Run Rake task to update data
         working-directory: ./importer
         run: |
           echo "Updating ISO data using Rake..."
+          # Use an absolute path to the output directory to remove all ambiguity.
           OUTPUT_PATH="${{ github.workspace }}/data"
           echo "Outputting data to: $OUTPUT_PATH"
           bundle exec rake "data:update_all[true,yaml,$OUTPUT_PATH]"
           echo "Data update task finished."
 
-      # This is the most important step for debugging.
       - name: Check for changes, Commit and Push to iso-data-open
         id: commit_iso_data_open
         working-directory: ./data # We are inside the data repository
         run: |
-          echo "--- DEBUGGING GIT STATUS ---"
-          echo "Current directory: $(pwd)"
-          
-          echo "Listing files:"
-          ls -la
-          
-          echo "Git status:"
-          git status
-          
-          echo "--- END DEBUGGING ---"
-
-          # Now, run the original logic
-          if git diff --quiet HEAD; then
-            echo "iso-data-open has no changes. The 'if' condition was true."
+          # Use `git status --porcelain` to check for ALL changes, including new (untracked) files.
+          # If its output is empty, there are no changes.
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "iso-data-open has no changes."
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
-            echo "iso-data-open has changes. The 'if' condition was false."
+            echo "iso-data-open has changes."
+            # Add all new and changed files
             git add .
             git commit -m "TEST: Update ISO open data files - $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
             echo "Pushing data changes to H3xano/iso-data-open..."
@@ -76,13 +73,14 @@ jobs:
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
-      # The rest of the workflow remains the same
-      - name: Bump version, Tag, and Commit in iso-data-importer
+      - name: Bump version, Tag, and Push to iso-data-importer
         if: steps.commit_iso_data_open.outputs.has_changes == 'true'
         working-directory: ./importer
         run: |
-          echo "Data changed, proceeding with version bump..."
+          echo "Data changed, proceeding with version bump for iso-data-importer..."
+          # This push will now work because of the token in the importer checkout step
           bundle exec gem bump --version patch --tag --commit --push
+          echo "Version bumped, tagged, and pushed."
 
       - name: DISABLED - Publish to RubyGems.org
         if: false
