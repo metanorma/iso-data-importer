@@ -39,6 +39,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "httparty"
-  spec.add_dependency "lutaml-model"
+  spec.add_dependency "lutaml-model", "~> 0.8"
   spec.add_dependency "thor"
 end
