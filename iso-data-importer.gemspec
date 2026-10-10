@@ -40,5 +40,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "httparty"
   spec.add_dependency "lutaml-model"
-  spec.add_dependency "thor"
+  spec.add_dependency "thor", "~> 1.4"
 end
