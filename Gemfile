@@ -4,7 +4,7 @@ source "https://rubygems.org"
 
 gemspec
 
-gem "lutaml-model", github: "lutaml/lutaml-model"
+gem "lutaml-model", "~> 0.8.164"
 gem "nokogiri"
 gem "rake"
 gem "rspec"
