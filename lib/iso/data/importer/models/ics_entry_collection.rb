@@ -11,10 +11,9 @@ module Iso
 
         class LocaleString < Lutaml::Model::Serializable
           attribute :value, :string
-          attribute :lang, :string
+          attribute :lang, :xml_lang
           xml do
-            map_attribute "lang", to: :lang,
-                          namespace: "http://www.w3.org/XML/1998/namespace", prefix: "xml"
+            map_attribute "lang", to: :lang
             map_content to: :value
           end
           key_value do
